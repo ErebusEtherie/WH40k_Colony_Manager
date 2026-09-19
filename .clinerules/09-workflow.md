@@ -29,12 +29,36 @@ When uncertain between Small Bugfix and Standard: treat as Standard.
 | Change Type | codex-grade-coding | code-reviewer | review-team | security-first |
 |-------------|-------------------|--------------|-------------|----------------|
 | Small Bugfix | Optional | Optional (short path) | No | Only if security-related |
-| Standard | Required (up-front gate) | Required (via implement-phase) | Only if medium+/architectural/public API/multi-module | No |
+| Standard | Optional (use for complex/ambiguous/risky) | Required (via implement-phase) | Only if medium+/architectural/public API/multi-module | No |
 | Security Sensitive | Required (risky mode) | Required (via implement-phase) | Required | Required |
 
 `code-reviewer` runs for implemented changes inside the implement-phase
 workflow (steps 7 and 10) — this column is where that gate shows up in the
 per-change-type matrix.
+
+## Skill Invocation
+
+Base rules (00–11) are always active and cover the majority of tasks on
+their own. Invoke a skill only when its trigger applies — a skill is a
+loaded enhancement, not ambient ceremony:
+
+| Skill | Invoke when |
+| --- | --- |
+| `code-reviewer` | Self-review of changed code is wanted (also wired into the implement-phase workflow) |
+| `codex-grade-coding` | Task is complex, ambiguous, risky, or benefits from explicit task classification — optional for Standard, required (risky mode) for Security Sensitive |
+| `review-team` | A formal multi-perspective review is requested, or the change is medium+/architectural/public API/multi-module |
+| `security-first` | Change touches auth, authorization, secrets, untrusted input, config/infrastructure, or sensitive data |
+| `frontend-design` | UI/UX work requiring design-system-driven, non-generic interface work |
+
+Do not invoke skills for trivial tasks (typo fixes, import corrections,
+documentation tweaks, isolated simple fixes) — the base rules cover those
+with the short path. When a skill is invoked, load only its SKILL.md; for
+`review-team`, read only the reviewers actually being launched (see that
+skill's Reviewer Loading Protocol), never the whole set.
+
+For Security Sensitive changes, invoke `security-first` before
+implementation so trust boundaries and attack surface are framed before
+code is written, not as a post-hoc check.
 
 ## Invocation Defaults
 
@@ -51,7 +75,7 @@ per-change-type matrix.
 **Standard (Option B - lean gate)**:
 
 1. Inspect existing code
-2. codex-grade-coding (standard): smallest correct change
+2. codex-grade-coding only if the change is complex, ambiguous, or risky (optional otherwise)
 3. Implement
 4. Run validation tools
 5. Report concisely

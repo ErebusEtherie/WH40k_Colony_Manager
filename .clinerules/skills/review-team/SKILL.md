@@ -7,7 +7,7 @@ description: Use when the user asks for a code review by a fleet of specialized 
 
 Run a fleet of specialized reviewer subagents against the same change. Each reviewer is intentionally unaware of the others and must stay within its assigned focus area.
 
-Reviewer prompts live in `reviewers/`. Read only the reviewer files you plan to launch.
+Reviewer prompts live alongside this file. Read only the reviewer files you plan to launch.
 
 ## Modes
 
@@ -16,26 +16,44 @@ Reviewer prompts live in `reviewers/`. Read only the reviewer files you plan to 
 
 If the user does not specify a mode, use **single**. Use **iterate** only when the user explicitly asks to keep fixing, make reviewers happy, or run until clean.
 
+## Reviewer Loading Protocol
+
+Read reviewers at launch time only — never pre-load the whole set.
+
+1. Read this SKILL.md.
+2. Pick the reviewers that match the change:
+   - Backend logic → correctness, security-abuse, architecture (add testing-strategy if tests changed)
+   - Frontend → correctness, product-ux-accessibility, architecture
+   - API changes → api-compatibility, architecture, security-abuse
+   - Config/infrastructure → security-abuse, architecture, telemetry-observability
+3. Read only the reviewer files you plan to launch (the files below live in
+   this directory next to SKILL.md — there is no `reviewers/` subdirectory).
+4. Cap at 5 reviewers per review. If more than 5 are relevant, launch the
+   highest-risk ones and note the ones skipped.
+
+For an unspecified request, use the default set: correctness,
+security-abuse, architecture. Launch specialist reviewers only when the
+change touches their area. "Full team" means the default set plus every
+specialist relevant to this change — still subject to the 5-reviewer cap.
+
 ## Reviewer Set
 
-Core reviewers:
+Core (default):
 
-- `reviewers/correctness-reviewer.md`
-- `reviewers/security-abuse-reviewer.md`
-- `reviewers/architecture-reviewer.md`
-- `reviewers/code-quality-conventions-reviewer.md`
-- `reviewers/simplicity-scope-reviewer.md`
+- `correctness-reviewer.md`
+- `security-abuse-reviewer.md`
+- `architecture-reviewer.md`
 
-Specialist reviewers:
+Specialist (on-demand):
 
-- `reviewers/product-ux-accessibility-reviewer.md`
-- `reviewers/performance-reliability-reviewer.md`
-- `reviewers/telemetry-observability-reviewer.md`
-- `reviewers/testing-strategy-reviewer.md`
-- `reviewers/api-compatibility-reviewer.md`
-- `reviewers/documentation-dx-reviewer.md`
-
-Default to all reviewers when the user asks for the full team. For narrower requests, launch only the relevant reviewers.
+- `code-quality-conventions-reviewer.md`
+- `simplicity-scope-reviewer.md`
+- `product-ux-accessibility-reviewer.md`
+- `performance-reliability-reviewer.md`
+- `telemetry-observability-reviewer.md`
+- `testing-strategy-reviewer.md`
+- `api-compatibility-reviewer.md`
+- `documentation-dx-reviewer.md`
 
 ## Launch Pattern
 
