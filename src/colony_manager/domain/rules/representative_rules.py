@@ -66,7 +66,7 @@ def get_personality_modifiers(
                     modifier_category=ModifierCategory.PERMANENT,
                     modifier_stat=ModifierStat(effect.stat),
                     modifier_value=effect.value,
-                    description=f"Personality: {personality.name}",
+                    modifier_description=f"Personality: {personality.name}",
                     is_active=True,
                     source_entity_id=representative.id,
                 )

@@ -79,7 +79,9 @@ def get_support_upgrade_modifiers(
                     modifier_category=ModifierCategory.PERMANENT,
                     modifier_stat=upgrade.custom_stat_choice,
                     modifier_value=1,
-                    description=f"{upgrade.name} (chosen: {upgrade.custom_stat_choice.value})",
+                    modifier_description=(
+                        f"{upgrade.name} (chosen: {upgrade.custom_stat_choice.value})"
+                    ),
                     is_active=True,
                     source_entity_id=upgrade.id,
                 )
@@ -108,7 +110,7 @@ def get_support_upgrade_modifiers(
                 modifier_category=ModifierCategory.PERMANENT,
                 modifier_stat=ModifierStat(stat_effect.stat),
                 modifier_value=final_value,
-                description=(
+                modifier_description=(
                     f"{upgrade.name} ({_get_conditional_description(stat_effect, colony_type)})"
                 ),
                 is_active=True,

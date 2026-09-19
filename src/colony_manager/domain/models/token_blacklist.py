@@ -30,4 +30,4 @@ class TokenBlacklist(BaseModel):
     user_id: int = Field(..., gt=0, description="User ID who owned this token")
     expires_at: datetime = Field(..., description="Token's natural expiration time")
     revoked_at: datetime = Field(..., description="When token was blacklisted")
-    reason: str | None = Field(None, description="Reason for revocation")
+    reason: str | None = Field(default=None, description="Reason for revocation")
