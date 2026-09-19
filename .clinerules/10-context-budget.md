@@ -48,6 +48,10 @@ Do not read a full doc file up front. Instead:
 2. Read the section/file summary first.
 3. Read only the section you need, not the whole document.
 
+Which tool fetches the content (read_files vs context7 vs git vs web
+search) is `11-tools.md`; this section governs how much to read once the
+source is known.
+
 ## Signal when over budget
 
 If you catch yourself:

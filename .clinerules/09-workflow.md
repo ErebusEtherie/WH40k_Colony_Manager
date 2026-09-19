@@ -133,9 +133,24 @@ than silently believing or silently fixing it.
 
 For long or multi-session work, keep a lightweight task-state file under
 `tasks/` (see `tasks/TEMPLATE.md`): task definition, plan with checkboxes,
-and per-step verification. On resumption, read that file instead of
-re-exploring the repo. Optional — use for multi-step work where losing
-context is expensive, not for small fixes.
+and per-step verification, at `tasks/<YYYY-MM-DD>-<topic>/task.md` (a
+completed example lives in `tasks/examples/`). Optional — use for multi-step
+work where losing context is expensive, not for small fixes.
+
+## Task Resumption
+
+When resuming a task:
+
+1. Find its task file under `tasks/`; when only the topic is known,
+   newest-first match wins.
+2. Read the task file (definition, plan table, step log) instead of
+   re-exploring the repo.
+3. Verify which steps are marked done `[x]` versus open `[ ]`.
+4. Continue from the next uncompleted step — and re-confirm the last
+   completed step still holds, since state may have drifted since it was
+   written.
+5. Do not re-plan from scratch unless the task file is missing, the plan no
+   longer matches reality, or the user asks.
 
 ## Definition of Done
 

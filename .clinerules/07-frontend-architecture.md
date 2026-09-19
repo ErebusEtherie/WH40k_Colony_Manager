@@ -30,7 +30,7 @@ src/
   types/          # API types (colony.ts, generated api.d.ts)
   data/           # static FE config (rulesData.ts, seedData.ts) — NOT game
                     # rule tables; those stay server-side
-  assets/         # mechanicum-design-system.css, fonts
+  index.css       # theme variables (--mech-*), themes, optics; imported by main.tsx
 ```
 
 There is no separate `features/`, `api/`, or `hooks/` directory yet — those
@@ -364,14 +364,16 @@ Two layers, used deliberately rather than interchangeably:
 | Layer | Purpose | Example |
 |---|---|---|
 | Tailwind v4 | Layout, spacing, responsive utilities | `flex gap-4 p-6 rounded-lg` |
-| Mechanicum design-system CSS | Theme variables, WH40k-styled components, fonts | `--mech-amber`, `.data-slate`, `.ornament-border` |
+| Mechanicum design-system CSS (`src/index.css`) | Theme variables, WH40k-styled components, fonts | `--mech-amber`, `.data-slate`, `.ornament-border` |
 
 Rules:
 
 - New theme-able values (colors, fonts, decorative treatments) are added to
-  `assets/mechanicum-design-system.css` as CSS variables, not hardcoded
-  Tailwind color classes or inline styles — otherwise the 7-theme swap
-  breaks silently for that element.
+  `src/index.css` (the loaded stylesheet — imported by `main.tsx`) as CSS
+  variables, not hardcoded Tailwind color classes or inline styles —
+  otherwise the 7-theme swap breaks silently for that element. The legacy
+  `src/assets/css/mechanicum-design-system.css` reference copy is NOT
+  imported by the app; do not add theme values there.
 - Per the confirmed UI direction: **Cult Mechanicus / data-slate ornamentation
   is confined to chrome (headers, borders, decorative framing) — data
   surfaces themselves (tables, stat values, numbers a GM needs to read
