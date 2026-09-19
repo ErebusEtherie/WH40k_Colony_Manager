@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class NotificationType(str, Enum):  # type: ignore[misc]
+class NotificationType(StrEnum):
     """Types of notifications that can be sent."""
 
     COLONY_CHANGED = "colony_changed"
@@ -76,10 +77,8 @@ class NotificationService:
     def unsubscribe(self, user_id: int, queue: asyncio.Queue[Notification]) -> None:
         """Unsubscribe a specific queue for a user."""
         if user_id in self._subscribers:
-            try:
+            with contextlib.suppress(ValueError):  # Queue not in list
                 self._subscribers[user_id].remove(queue)
-            except ValueError:
-                pass  # Queue not in list
 
     async def publish(self, notification: Notification) -> None:
         """Publish a notification to all subscribers.
@@ -92,10 +91,8 @@ class NotificationService:
             # For simplicity, broadcast to all users
             for queues in self._subscribers.values():
                 for queue in queues:
-                    try:
+                    with contextlib.suppress(asyncio.QueueFull):  # Skip if queue is full
                         queue.put_nowait(notification)
-                    except asyncio.QueueFull:
-                        pass  # Skip if queue is full
 
     async def publish_to_colony(
         self,

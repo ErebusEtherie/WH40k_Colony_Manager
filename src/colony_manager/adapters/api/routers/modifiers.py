@@ -28,11 +28,11 @@ async def list_all_modifiers(
     is_active: bool | None = Query(default=None, description="Filter by active status"),
 ) -> PaginatedResponse[ModifierListItem]:
     """List all modifiers across all colonies with pagination.
-    
+
     Optional filters:
     - colony_id: Filter modifiers by specific colony
     - is_active: Filter by active status (true/false)
-    
+
     Note: This endpoint loads all modifiers into memory before applying pagination.
     For large datasets, consider implementing repository-level pagination in the future.
     """
@@ -40,16 +40,16 @@ async def list_all_modifiers(
     all_modifiers = []
     for colony in colonies:
         assert colony.id is not None
-        
+
         # Filter by colony_id if provided
         if colony_id is not None and colony.id != colony_id:
             continue
-        
+
         for mod in colony.modifiers:
             # Filter by is_active if provided
             if is_active is not None and mod.is_active != is_active:
                 continue
-            
+
             all_modifiers.append(
                 ModifierListItem(
                     id=mod.id,
@@ -61,11 +61,11 @@ async def list_all_modifiers(
                     is_active=mod.is_active,
                 )
             )
-    
+
     # Apply pagination
     total = len(all_modifiers)
     items = all_modifiers[offset : offset + limit]
-    
+
     return PaginatedResponse(
         items=items,
         meta=PaginationMeta(
@@ -77,7 +77,11 @@ async def list_all_modifiers(
     )
 
 
-@router.get("/{modifier_id}", response_model=ModifierResponse, responses={404: {"description": "Modifier not found"}})
+@router.get(
+    "/{modifier_id}",
+    response_model=ModifierResponse,
+    responses={404: {"description": "Modifier not found"}},
+)
 async def get_modifier(
     modifier_id: int,
     current_user: Annotated[User, Depends(require_role("admin"))],

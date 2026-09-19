@@ -309,7 +309,8 @@ def test_state_bonuses_and_modifiers_combine(base_pf, size, leadership_mod, modi
         is_orderly=True,
     )
 
-    # Should have all bonuses: Placated (+1), Productive (+2), Orderly (+2), leadership, and modifiers
+    # Should have all bonuses: Placated (+1), Productive (+2), Orderly (+2),
+    # leadership, and modifiers
     expected_bonus = 1 + 2 + 2 + leadership_mod + sum(modifier_values)
     expected_raw = base_pf + expected_bonus
 

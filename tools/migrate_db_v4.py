@@ -80,9 +80,7 @@ def migrate_database(db_path: str) -> None:
     cursor.execute(create_sql)
 
     # Copy data (only columns that exist in both)
-    existing_cols = [
-        c for c in columns.keys() if c not in columns_to_remove and c != "sqlite_sequence"
-    ]
+    existing_cols = [c for c in columns if c not in columns_to_remove and c != "sqlite_sequence"]
     copy_cols = ", ".join(existing_cols)
     cursor.execute(f"INSERT INTO colonies_new ({copy_cols}) SELECT {copy_cols} FROM colonies")
 

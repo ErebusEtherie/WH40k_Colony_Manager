@@ -1,5 +1,6 @@
 """Export/Import API router for colony data."""
 
+import contextlib
 import json
 from typing import Annotated, Any
 
@@ -33,14 +34,20 @@ ERR_COLONY_NOT_FOUND = "Colony not found"
 ERR_IMPORT_FAILED = "Failed to import colony data"
 
 
-@router.get("/{colony_id}/export", response_class=Response, responses={404: {"description": "Colony not found"}})
+@router.get(
+    "/{colony_id}/export",
+    response_class=Response,
+    responses={404: {"description": "Colony not found"}},
+)
 async def export_colony(
     colony_id: int,
     current_user: Annotated[User, Depends(require_colony_permission("edit"))],
     colony_service: Annotated[ColonyService, Depends(get_colony_service)],
     representative_service: Annotated[RepresentativeService, Depends(get_representative_service)],
     event_service: Annotated[EventService, Depends(get_event_service)],
-    development_plan_service: Annotated[DevelopmentPlanService, Depends(get_development_plan_service)],
+    development_plan_service: Annotated[
+        DevelopmentPlanService, Depends(get_development_plan_service)
+    ],
     colony_user_service: Annotated[ColonyUserService, Depends(get_colony_user_service)],
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> Response:
@@ -59,15 +66,18 @@ async def export_colony(
     try:
         colony = colony_service.get_colony(colony_id)
     except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERR_COLONY_NOT_FOUND) from e
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=ERR_COLONY_NOT_FOUND
+        ) from e
 
     # Get representative if exists
     representative = None
     if colony.representative_id is not None:
-        try:
-            representative = representative_service.get_representative_by_id(colony.representative_id)
-        except (NotFoundError, AttributeError):
-            pass  # Representative referenced but not found, skip it
+        # Representative referenced but not found, skip it
+        with contextlib.suppress(NotFoundError, AttributeError):
+            representative = representative_service.get_representative_by_id(
+                colony.representative_id
+            )
 
     # Get all events for this colony
     events = event_service.get_events_by_colony(colony_id, active_only=False)
@@ -98,14 +108,23 @@ async def export_colony(
     )
 
 
-@router.post("/import", status_code=status.HTTP_201_CREATED, responses={400: {"description": "Invalid import data"}, 404: {"description": "Referenced resources not found"}})
+@router.post(
+    "/import",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        400: {"description": "Invalid import data"},
+        404: {"description": "Referenced resources not found"},
+    },
+)
 async def import_colony(
     file_content: dict[str, Any],
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],
     colony_service: Annotated[ColonyService, Depends(get_colony_service)],
     representative_service: Annotated[RepresentativeService, Depends(get_representative_service)],
     event_service: Annotated[EventService, Depends(get_event_service)],
-    development_plan_service: Annotated[DevelopmentPlanService, Depends(get_development_plan_service)],
+    development_plan_service: Annotated[
+        DevelopmentPlanService, Depends(get_development_plan_service)
+    ],
     colony_user_service: Annotated[ColonyUserService, Depends(get_colony_user_service)],
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> dict[str, Any]:
@@ -129,7 +148,7 @@ async def import_colony(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Current user has no ID",
         )
-    
+
     importer = ColonyImporter()
 
     try:
@@ -147,7 +166,7 @@ async def import_colony(
         ) from e
 
     try:
-        # import_data is already a dict with keys: colony, representative, events, development_plans, colony_users
+        # import_data keys: colony, representative, events, development_plans, colony_users
         colony = import_data["colony"]
         # Pass current_user.id as changed_by so the service adds them as owner
         created_colony = colony_service.create_colony(colony, changed_by=current_user.id)
@@ -203,7 +222,7 @@ async def import_colony(
             # Skip if this is the current user (already added as owner by create_colony)
             if colony_user.user_id == current_user.id:
                 continue
-            
+
             # Look up user by username
             if colony_user.username:
                 existing_user = user_service.get_user_by_username(colony_user.username)
@@ -217,19 +236,13 @@ async def import_colony(
                             invited_by=current_user.id,
                         )
                     except Exception as e:  # noqa: BLE001 - Continue processing other users even if one fails
-                        warnings.append(
-                            f"Failed to add user '{colony_user.username}': {e}"
-                        )
+                        warnings.append(f"Failed to add user '{colony_user.username}': {e}")
                 else:
                     # User doesn't exist, add warning
-                    warnings.append(
-                        f"User '{colony_user.username}' not found in system, skipped"
-                    )
+                    warnings.append(f"User '{colony_user.username}' not found in system, skipped")
             else:
                 # No username provided, skip
-                warnings.append(
-                    f"User ID {colony_user.user_id} has no username, skipped"
-                )
+                warnings.append(f"User ID {colony_user.user_id} has no username, skipped")
 
         result = {
             "id": new_colony_id,

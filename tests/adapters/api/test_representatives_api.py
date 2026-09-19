@@ -92,7 +92,11 @@ def representatives_with_data(auth_client: TestClient) -> list[dict]:
     # Assign one representative to a colony
     colony_response = auth_client.post(
         "/api/v1/colonies",
-        json={"name": "Test Colony", "founder_name": "Test Owner", "colony_type": "mining_and_industry"},
+        json={
+            "name": "Test Colony",
+            "founder_name": "Test Owner",
+            "colony_type": "mining_and_industry",
+        },
     )
     colony_id = colony_response.json()["id"]
 

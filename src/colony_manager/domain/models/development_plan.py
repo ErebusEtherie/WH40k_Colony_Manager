@@ -5,12 +5,12 @@ through installation as actual Infrastructure or Support Upgrades.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class DevelopmentPlanStatus(str, Enum):
+class DevelopmentPlanStatus(StrEnum):
     """Status enumeration for development plans.
 
     Workflow: PLANNED <-> IN_PROGRESS <-> ACQUIRED -> DELIVERED

@@ -315,7 +315,6 @@ class TestRefreshReuseDetection:
         # Logout is intentional: the family must survive.
         assert blacklist_repo.is_blacklisted("live-refresh-0") is False
 
-
     def test_non_blacklisted_token_is_usable(self, tmp_path):
         """A token with no blacklist entry remains usable."""
         db_url = _create_db_url(tmp_path)
@@ -392,7 +391,7 @@ class TestAccountLockout:
             login_attempt_repository=login_repo,
         )
 
-        for i in range(LOCKOUT_MAX_ATTEMPTS):
+        for _i in range(LOCKOUT_MAX_ATTEMPTS):
             auth_service.track_login_attempt(
                 "lockuser", success=False, ip_address="192.168.1.1", user_agent="TestAgent/1.0"
             )
@@ -411,7 +410,7 @@ class TestAccountLockout:
             login_attempt_repository=login_repo,
         )
 
-        for i in range(LOCKOUT_MAX_ATTEMPTS - 1):
+        for _i in range(LOCKOUT_MAX_ATTEMPTS - 1):
             auth_service.track_login_attempt(
                 "notlocked", success=False, ip_address="192.168.1.1", user_agent="TestAgent/1.0"
             )
@@ -431,7 +430,7 @@ class TestAccountLockout:
         )
 
         with freeze_time(datetime.now(UTC) - timedelta(minutes=LOCKOUT_WINDOW_MINUTES + 5)):
-            for i in range(LOCKOUT_MAX_ATTEMPTS):
+            for _i in range(LOCKOUT_MAX_ATTEMPTS):
                 auth_service.track_login_attempt(
                     "expireuser",
                     success=False,

@@ -141,7 +141,7 @@ class Representative(BaseModel):
             )
 
         count = len(self.personalities)
-        
+
         # Check for Quite a Character position
         quite_a_character_index = None
         for i, personality in enumerate(self.personalities):
@@ -171,7 +171,8 @@ class Representative(BaseModel):
             else:
                 raise ValueError(
                     f"Cannot have {count} personalities. "
-                    f"Maximum is 2 personalities without 'Quite a Character' in first or second position."
+                    f"Maximum is 2 personalities without 'Quite a Character' "
+                    f"in first or second position."
                 )
 
         return self

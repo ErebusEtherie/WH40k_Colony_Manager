@@ -36,17 +36,17 @@ def get_colony_members(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of items to return"),
 ) -> PaginatedResponse[ColonyUserListItem]:
     """Get all members of a colony with pagination.
-    
+
     Note: Pagination is applied in-memory after loading all items. This is acceptable
     for typical colony sizes (<100 members). For colonies with >1000 members,
     consider adding paginated query methods to the repository layer.
     """
     memberships = service.get_members_by_colony(colony_id)
-    
+
     # Calculate pagination
     total = len(memberships)
     items = memberships[offset : offset + limit]
-    
+
     # Build paginated response
     result: list[ColonyUserListItem] = []
     for m in items:
@@ -61,7 +61,7 @@ def get_colony_members(
                 joined_at=m.joined_at,
             )
         )
-    
+
     return PaginatedResponse(
         items=result,
         meta=PaginationMeta(
@@ -73,7 +73,12 @@ def get_colony_members(
     )
 
 
-@router.post("", response_model=ColonyUserResponse, status_code=status.HTTP_201_CREATED, responses={400: {"description": "User already member"}, 404: {"description": "User not found"}})
+@router.post(
+    "",
+    response_model=ColonyUserResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={400: {"description": "User already member"}, 404: {"description": "User not found"}},
+)
 def add_colony_member(
     colony_id: int,
     member_data: ColonyUserCreate,
@@ -101,12 +106,12 @@ def add_colony_member(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )
+        ) from e
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
 
     if membership.id is None or membership.joined_at is None:
         raise HTTPException(
@@ -124,7 +129,11 @@ def add_colony_member(
     )
 
 
-@router.get("/{user_id}", response_model=ColonyUserResponse, responses={404: {"description": "Member not found"}})
+@router.get(
+    "/{user_id}",
+    response_model=ColonyUserResponse,
+    responses={404: {"description": "Member not found"}},
+)
 def get_colony_member(
     colony_id: int,
     user_id: int,
@@ -155,7 +164,11 @@ def get_colony_member(
     )
 
 
-@router.patch("/{user_id}", response_model=ColonyUserResponse, responses={404: {"description": "Member not found"}})
+@router.patch(
+    "/{user_id}",
+    response_model=ColonyUserResponse,
+    responses={404: {"description": "Member not found"}},
+)
 def update_colony_member_role(
     colony_id: int,
     user_id: int,
@@ -202,7 +215,11 @@ def update_colony_member_role(
     )
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Member not found"}})
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Member not found"}},
+)
 def remove_colony_member(
     colony_id: int,
     user_id: int,
@@ -229,7 +246,15 @@ def remove_colony_member(
     service.remove_member(membership.id, changed_by=current_user.id)
 
 
-@router.post("/transfer-ownership", response_model=dict, responses={400: {"description": "Invalid transfer"}, 403: {"description": "Not owner"}, 404: {"description": "User not found"}})
+@router.post(
+    "/transfer-ownership",
+    response_model=dict,
+    responses={
+        400: {"description": "Invalid transfer"},
+        403: {"description": "Not owner"},
+        404: {"description": "User not found"},
+    },
+)
 def transfer_colony_ownership(
     colony_id: int,
     transfer_data: ColonyOwnershipTransfer,
@@ -278,9 +303,9 @@ def transfer_colony_ownership(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
     except NotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )
+        ) from e

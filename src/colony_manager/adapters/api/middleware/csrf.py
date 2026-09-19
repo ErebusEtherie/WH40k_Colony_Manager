@@ -51,7 +51,10 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         if not csrf_token:
             return JSONResponse(
                 status_code=status.HTTP_403_FORBIDDEN,
-                content={"detail": "CSRF token missing. Please refresh the page.", "path": request.url.path},
+                content={
+                    "detail": "CSRF token missing. Please refresh the page.",
+                    "path": request.url.path,
+                },
             )
 
         # Validate CSRF token against cookie
@@ -60,7 +63,10 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         if not cookie_token or csrf_token != cookie_token:
             return JSONResponse(
                 status_code=status.HTTP_403_FORBIDDEN,
-                content={"detail": "CSRF token invalid. Please refresh the page.", "path": request.url.path},
+                content={
+                    "detail": "CSRF token invalid. Please refresh the page.",
+                    "path": request.url.path,
+                },
             )
 
         return await call_next(request)

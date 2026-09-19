@@ -6,7 +6,11 @@ class TestExportColony:
 
     def test_export_colony_basic(self, auth_client):
         """Test exporting a basic colony."""
-        create_data = {"name": "Export Test Colony", "founder_name": "Test Trader", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "Export Test Colony",
+            "founder_name": "Test Trader",
+            "colony_type": "mining_and_industry",
+        }
         response = auth_client.post("/api/v1/colonies", json=create_data)
         assert response.status_code == 201
         colony = response.json()
@@ -45,7 +49,11 @@ class TestImportColony:
 
     def test_import_export_roundtrip(self, auth_client):
         """Test that exporting then importing preserves data."""
-        create_data = {"name": "Roundtrip Colony", "founder_name": "Founder", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "Roundtrip Colony",
+            "founder_name": "Founder",
+            "colony_type": "mining_and_industry",
+        }
         response = auth_client.post("/api/v1/colonies", json=create_data)
         assert response.status_code == 201
         original_id = response.json()["id"]

@@ -27,8 +27,7 @@ def test_get_colony_types_includes_full_payload(test_client: TestClient):
 
     # Mining begins with a free upgrade AND has a conditional exploit bonus.
     assert any(
-        e.get("starts_with_upgrade") is True
-        and e.get("upgrade_type") == "industrial_facility"
+        e.get("starts_with_upgrade") is True and e.get("upgrade_type") == "industrial_facility"
         for e in mining["special_effects"]
     )
     assert any(
@@ -38,8 +37,7 @@ def test_get_colony_types_includes_full_payload(test_client: TestClient):
 
     ecclesiastical = by_id["ecclesiastical"]
     assert any(
-        e.get("starts_with_upgrade") is True
-        and e.get("upgrade_type") == "cultural_improvement"
+        e.get("starts_with_upgrade") is True and e.get("upgrade_type") == "cultural_improvement"
         for e in ecclesiastical["special_effects"]
     )
     assert any(e.get("order_piety_swap") is True for e in ecclesiastical["special_effects"])

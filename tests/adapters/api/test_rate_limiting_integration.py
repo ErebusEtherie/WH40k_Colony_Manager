@@ -85,7 +85,9 @@ class TestRateLimitEnforcement:
     def test_login_returns_401_for_invalid_credentials_without_rate_limit(
         self, rate_limited_client
     ):
-        """Test that login endpoint returns 401 for invalid credentials (baseline behavior, not rate limited)."""
+        """Test that login endpoint returns 401 for invalid credentials
+        (baseline behavior, not rate limited).
+        """
         # Rate limiting is disabled in test environment by default
         # See rate_limiter.py: get_limiter() checks for pytest in sys.modules
 

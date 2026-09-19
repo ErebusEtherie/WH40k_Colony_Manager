@@ -6,20 +6,28 @@ from pydantic import BaseModel, EmailStr, Field
 class LoginRequest(BaseModel):
     """Request schema for user login."""
 
-    username: str = Field(..., min_length=3, max_length=50, description="Your username", examples=["rogue_trader"])
-    password: str = Field(..., min_length=8, max_length=128, description="Your password", examples=["SecureP@ss123"])
+    username: str = Field(
+        ..., min_length=3, max_length=50, description="Your username", examples=["rogue_trader"]
+    )
+    password: str = Field(
+        ..., min_length=8, max_length=128, description="Your password", examples=["SecureP@ss123"]
+    )
 
 
 class RegisterRequest(BaseModel):
     """Request schema for user registration."""
 
-    username: str = Field(..., min_length=3, max_length=50, description="Desired username", examples=["rogue_trader"])
+    username: str = Field(
+        ..., min_length=3, max_length=50, description="Desired username", examples=["rogue_trader"]
+    )
     email: EmailStr = Field(..., description="Your email address", examples=["trader@voidship.com"])
     password: str = Field(
         ...,
         min_length=8,
         max_length=128,
-        description="Password (min 8 chars, must contain uppercase, lowercase, number, and special char)",
+        description=(
+            "Password (min 8 chars, must contain uppercase, lowercase, number, and special char)"
+        ),
         examples=["SecureP@ss123"],
     )
 

@@ -14,7 +14,6 @@ class ConfigurationError(Exception):
     """Raised when configuration loading fails."""
 
 
-
 class ModifierConfig(BaseModel):
     """A single modifier from config."""
 
@@ -92,7 +91,9 @@ class InfrastructureConfigLoader:
                 Defaults to config/infrastructure_types.yaml in project root.
         """
         if config_path is None:
-            config_path = Path(__file__).parent.parent.parent.parent / "config" / "infrastructure_types.yaml"
+            config_path = (
+                Path(__file__).parent.parent.parent.parent / "config" / "infrastructure_types.yaml"
+            )
         self.config_path = config_path
 
     def load(self) -> dict[str, InfrastructureTypeConfig]:
@@ -105,12 +106,14 @@ class InfrastructureConfigLoader:
             ConfigurationError: If config file is missing, malformed, or contains invalid data.
         """
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
         except FileNotFoundError:
-            raise ConfigurationError(f"Infrastructure config not found: {self.config_path}")
+            raise ConfigurationError(
+                f"Infrastructure config not found: {self.config_path}"
+            ) from None
         except yaml.YAMLError as e:
-            raise ConfigurationError(f"Invalid YAML in {self.config_path}: {e}")
+            raise ConfigurationError(f"Invalid YAML in {self.config_path}: {e}") from e
 
         configs = {}
         for item in data:
@@ -120,7 +123,7 @@ class InfrastructureConfigLoader:
             except ValidationError as e:
                 raise ConfigurationError(
                     f"Invalid config for '{item.get('name', 'unknown')}': {e}"
-                )
+                ) from e
 
         return configs
 
@@ -136,7 +139,9 @@ class SupportUpgradeConfigLoader:
                 Defaults to config/support_upgrades.yaml in project root.
         """
         if config_path is None:
-            config_path = Path(__file__).parent.parent.parent.parent / "config" / "support_upgrades.yaml"
+            config_path = (
+                Path(__file__).parent.parent.parent.parent / "config" / "support_upgrades.yaml"
+            )
         self.config_path = config_path
 
     def load(self) -> dict[str, SupportUpgradeConfig]:
@@ -149,12 +154,14 @@ class SupportUpgradeConfigLoader:
             ConfigurationError: If config file is missing, malformed, or contains invalid data.
         """
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
         except FileNotFoundError:
-            raise ConfigurationError(f"Support upgrade config not found: {self.config_path}")
+            raise ConfigurationError(
+                f"Support upgrade config not found: {self.config_path}"
+            ) from None
         except yaml.YAMLError as e:
-            raise ConfigurationError(f"Invalid YAML in {self.config_path}: {e}")
+            raise ConfigurationError(f"Invalid YAML in {self.config_path}: {e}") from e
 
         configs = {}
         for item in data:
@@ -164,7 +171,7 @@ class SupportUpgradeConfigLoader:
             except ValidationError as e:
                 raise ConfigurationError(
                     f"Invalid config for '{item.get('name', 'unknown')}': {e}"
-                )
+                ) from e
 
         return configs
 

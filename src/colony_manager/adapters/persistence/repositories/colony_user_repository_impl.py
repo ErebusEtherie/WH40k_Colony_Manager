@@ -47,7 +47,8 @@ class SqlAlchemyColonyUserRepository(ColonyUserRepository):
 
             if existing:
                 raise ValueError(
-                    f"User {colony_user.user_id} is already a member of colony {colony_user.colony_id}"
+                    f"User {colony_user.user_id} is already a member of "
+                    f"colony {colony_user.colony_id}"
                 )
 
             orm_membership = domain_to_orm_colony_user(colony_user)

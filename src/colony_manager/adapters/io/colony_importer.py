@@ -16,7 +16,8 @@ class ColonyImporter:
         """Import colony from a file path.
 
         Returns:
-            Dictionary with 'colony', 'representative', 'events', 'development_plans', 'colony_users'
+            Dictionary with 'colony', 'representative', 'events',
+            'development_plans', 'colony_users'
         """
         payload = Path(path).read_text(encoding="utf-8")
         return self.import_from_string(payload)
@@ -25,7 +26,8 @@ class ColonyImporter:
         """Import colony from a JSON string.
 
         Returns:
-            Dictionary with 'colony', 'representative', 'events', 'development_plans', 'colony_users'
+            Dictionary with 'colony', 'representative', 'events',
+            'development_plans', 'colony_users'
         """
         save_file = ColonySaveFile.model_validate_json(payload)
         return save_file_to_domain(save_file)

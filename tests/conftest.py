@@ -58,7 +58,6 @@ def bootstrap_user():
     return _bootstrap_user
 
 
-
 @pytest.fixture(scope="function")
 def test_client(tmp_path):
     """Create test client with isolated database."""

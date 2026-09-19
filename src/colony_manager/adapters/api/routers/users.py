@@ -77,7 +77,15 @@ async def list_users(
     )
 
 
-@router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED, responses={400: {"description": "Username/email exists"}, 403: {"description": "Forbidden - Admin only"}})
+@router.post(
+    "",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        400: {"description": "Username/email exists"},
+        403: {"description": "Forbidden - Admin only"},
+    },
+)
 async def create_user(
     current_user: Annotated[User, Depends(require_admin)],
     user_service: Annotated[UserService, Depends(get_user_service)],
@@ -116,10 +124,17 @@ async def create_user(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
 
 
-@router.get("/{user_id}", response_model=UserResponse, responses={403: {"description": "Forbidden - Admin only"}, 404: {"description": "User not found"}})
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+    responses={
+        403: {"description": "Forbidden - Admin only"},
+        404: {"description": "User not found"},
+    },
+)
 async def get_user(
     user_id: int,
     current_user: Annotated[User, Depends(require_admin)],
@@ -153,7 +168,15 @@ async def get_user(
     return _user_to_response(user)
 
 
-@router.patch("/{user_id}", response_model=UserResponse, responses={400: {"description": "Validation error"}, 403: {"description": "Forbidden"}, 404: {"description": "User not found"}})
+@router.patch(
+    "/{user_id}",
+    response_model=UserResponse,
+    responses={
+        400: {"description": "Validation error"},
+        403: {"description": "Forbidden"},
+        404: {"description": "User not found"},
+    },
+)
 async def update_user(
     user_id: int,
     current_user: Annotated[User, Depends(require_admin)],
@@ -192,20 +215,24 @@ async def update_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )
+        ) from e
     except PermissionError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e),
-        )
+        ) from e
     except ValidationError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT, responses={403: {"description": "Forbidden"}, 404: {"description": "User not found"}})
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={403: {"description": "Forbidden"}, 404: {"description": "User not found"}},
+)
 async def delete_user(
     user_id: int,
     current_user: Annotated[User, Depends(require_admin)],
@@ -239,15 +266,23 @@ async def delete_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )
+        ) from e
     except PermissionError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e),
-        )
+        ) from e
 
 
-@router.post("/{user_id}/reset-password", response_model=UserResponse, responses={400: {"description": "Validation error"}, 403: {"description": "Forbidden"}, 404: {"description": "User not found"}})
+@router.post(
+    "/{user_id}/reset-password",
+    response_model=UserResponse,
+    responses={
+        400: {"description": "Validation error"},
+        403: {"description": "Forbidden"},
+        404: {"description": "User not found"},
+    },
+)
 async def reset_password(
     user_id: int,
     current_user: Annotated[User, Depends(require_admin)],
@@ -284,14 +319,14 @@ async def reset_password(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )
+        ) from e
     except PermissionError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e),
-        )
+        ) from e
     except ValidationError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e

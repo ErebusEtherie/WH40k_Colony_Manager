@@ -48,7 +48,7 @@ API_V1_PREFIX = "/api/v1"
 
 def get_swagger_ui_html(*, openapi_url: str, title: str) -> str:
     """Custom Swagger UI HTML with cookie-based authentication support.
-    
+
     The UI uses persistAuthorization to maintain auth state across requests.
     """
     return f"""

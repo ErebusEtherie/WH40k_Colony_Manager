@@ -39,7 +39,7 @@ def get_audit_logs_by_colony(
         colony_id=colony_id,
         entity_type=entity_type,
     )
-    
+
     # Get paginated results
     logs = repository.get_by_colony(
         colony_id=colony_id,
@@ -51,7 +51,9 @@ def get_audit_logs_by_colony(
     result: list[AuditLogListItem] = []
     for log in logs:
         if log.id is None or log.changed_at is None:
-            logger.warning("Skipping audit log with incomplete data: colony_id=%s, log=%s", colony_id, log)
+            logger.warning(
+                "Skipping audit log with incomplete data: colony_id=%s, log=%s", colony_id, log
+            )
             continue
         assert log.colony_id is not None
         result.append(
@@ -66,7 +68,7 @@ def get_audit_logs_by_colony(
                 colony_id=log.colony_id,
             )
         )
-    
+
     return PaginatedResponse(
         items=result,
         meta=PaginationMeta(
@@ -78,7 +80,14 @@ def get_audit_logs_by_colony(
     )
 
 
-@router.get("/{log_id}", response_model=AuditLogResponse, responses={404: {"description": "Audit log entry not found"}, 500: {"description": "Internal server error - Audit log data is incomplete"}})
+@router.get(
+    "/{log_id}",
+    response_model=AuditLogResponse,
+    responses={
+        404: {"description": "Audit log entry not found"},
+        500: {"description": "Internal server error - Audit log data is incomplete"},
+    },
+)
 def get_audit_log(
     log_id: int,
     colony_id: int,
@@ -88,7 +97,7 @@ def get_audit_log(
     """Get a specific audit log entry by ID.
 
     Requires colony owner role.
-    
+
     Raises:
         HTTPException: 404 if audit log entry not found or belongs to different colony.
     """

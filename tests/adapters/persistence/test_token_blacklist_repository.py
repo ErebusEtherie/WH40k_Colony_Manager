@@ -119,10 +119,10 @@ class TestTokenBlacklistRevokeAll:
         from colony_manager.adapters.persistence.orm_models import TokenIssuanceORM
 
         engine = create_engine(db_url)
-        Session = sessionmaker(bind=engine)
+        session_factory = sessionmaker(bind=engine)
 
         now = datetime.now(UTC)
-        with Session() as session:
+        with session_factory() as session:
             # Add 3 active tokens for user 1
             for i in range(3):
                 token = TokenIssuanceORM(

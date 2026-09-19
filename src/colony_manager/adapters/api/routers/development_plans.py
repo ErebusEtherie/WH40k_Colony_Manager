@@ -84,7 +84,11 @@ def create_development_plan(
     )
 
 
-@router.get("/{plan_id}", response_model=DevelopmentPlanResponse, responses={404: {"description": "Plan not found"}})
+@router.get(
+    "/{plan_id}",
+    response_model=DevelopmentPlanResponse,
+    responses={404: {"description": "Plan not found"}},
+)
 def get_development_plan(
     plan_id: int,
     service: Annotated[DevelopmentPlanService, Depends(dependencies.get_development_plan_service)],
@@ -135,7 +139,11 @@ def get_development_plan(
     )
 
 
-@router.get("/colonies/{colony_id}", response_model=PaginatedResponse[DevelopmentPlanResponse], responses={403: {"description": "Forbidden - User not a member of colony"}})
+@router.get(
+    "/colonies/{colony_id}",
+    response_model=PaginatedResponse[DevelopmentPlanResponse],
+    responses={403: {"description": "Forbidden - User not a member of colony"}},
+)
 def get_development_plans_by_colony(
     colony_id: int,
     service: Annotated[DevelopmentPlanService, Depends(dependencies.get_development_plan_service)],
@@ -171,7 +179,7 @@ def get_development_plans_by_colony(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of items to return"),
 ) -> PaginatedResponse[DevelopmentPlanResponse]:
     """Get all development plans for a colony with pagination and filtering.
-    
+
     Filters:
     - status: Filter by plan status (planned, in_progress, acquired, delivered)
     - upgrade_type: Filter by upgrade type (infrastructure or support_upgrade)
@@ -193,29 +201,29 @@ def get_development_plans_by_colony(
         raise HTTPException(status_code=403, detail=f"User is not a member of colony {colony_id}")
 
     plans = service.get_plans_by_colony(colony_id)
-    
+
     filtered = plans
-    
+
     if status_filter is not None:
         # Convert schema enum to domain enum for comparison
         # Note: Assumes schema enum values match domain enum values
         domain_status = DevelopmentPlanStatus(status_filter.value)
         filtered = [p for p in filtered if p.status == domain_status]
-    
+
     if upgrade_type_filter is not None:
         filtered = [p for p in filtered if p.upgrade_type == upgrade_type_filter]
-    
+
     if priority_filter is not None:
         filtered = [p for p in filtered if p.priority == priority_filter]
-    
+
     if name_search is not None:
         search_lower = name_search.lower()
         filtered = [p for p in filtered if search_lower in p.target_name.lower()]
-    
+
     # Build response with pagination
     total = len(filtered)
     items = filtered[offset : offset + limit]
-    
+
     result: list[DevelopmentPlanResponse] = []
     for p in items:
         if p.id is None or p.created_at is None:
@@ -236,7 +244,7 @@ def get_development_plans_by_colony(
                 created_at=p.created_at,
             )
         )
-    
+
     return PaginatedResponse(
         items=result,
         meta=PaginationMeta(
@@ -248,7 +256,11 @@ def get_development_plans_by_colony(
     )
 
 
-@router.patch("/{plan_id}", response_model=DevelopmentPlanResponse, responses={404: {"description": "Plan not found"}})
+@router.patch(
+    "/{plan_id}",
+    response_model=DevelopmentPlanResponse,
+    responses={404: {"description": "Plan not found"}},
+)
 def update_development_plan(
     plan_id: int,
     plan_data: DevelopmentPlanUpdate,
@@ -306,7 +318,11 @@ def update_development_plan(
     )
 
 
-@router.delete("/{plan_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Plan not found"}})
+@router.delete(
+    "/{plan_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Plan not found"}},
+)
 def delete_development_plan(
     plan_id: int,
     service: Annotated[DevelopmentPlanService, Depends(dependencies.get_development_plan_service)],
@@ -326,7 +342,14 @@ def delete_development_plan(
     service.delete_plan(plan_id, changed_by=current_user.id)
 
 
-@router.post("/{plan_id}/install", response_model=InstallationResult, responses={400: {"description": "Plan not in DELIVERED status"}, 404: {"description": "Plan not found"}})
+@router.post(
+    "/{plan_id}/install",
+    response_model=InstallationResult,
+    responses={
+        400: {"description": "Plan not in DELIVERED status"},
+        404: {"description": "Plan not found"},
+    },
+)
 def install_development_plan(
     plan_id: int,
     service: Annotated[DevelopmentPlanService, Depends(dependencies.get_development_plan_service)],

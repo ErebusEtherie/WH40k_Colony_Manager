@@ -153,7 +153,10 @@ def list_colonies() -> None:
     typer.echo("Colonies:")
     for colony in colonies:
         patron_str = f" | Patron: {colony.patron_name}" if colony.patron_name else ""
-        typer.echo(f"- #{colony.id}: {colony.name} ({colony.colony_type}) — Founder: {colony.founder_name}{patron_str}")
+        typer.echo(
+            f"- #{colony.id}: {colony.name} ({colony.colony_type}) — "
+            f"Founder: {colony.founder_name}{patron_str}"
+        )
 
 
 @colony_app.command("set-age")
@@ -170,7 +173,8 @@ def set_colony_age(colony_id: int, days: int) -> None:
         typer.echo(str(exc))
         raise typer.Exit(code=1) from exc
     typer.echo(
-        f"Set colony {colony_id} age to {updated.age_days} days (last updated: {updated.age_last_updated})"
+        f"Set colony {colony_id} age to {updated.age_days} days "
+        f"(last updated: {updated.age_last_updated})"
     )
 
 
@@ -207,7 +211,8 @@ def add_colony_modifier(
         typer.echo(str(exc))
         raise typer.Exit(code=1) from exc
     typer.echo(
-        f"Added modifier to colony {colony_id}: {modifier_description} ({modifier_stat} {modifier_value:+d})"
+        f"Added modifier to colony {colony_id}: {modifier_description} "
+        f"({modifier_stat} {modifier_value:+d})"
     )
 
 
@@ -240,7 +245,8 @@ def assign_representative(colony_id: int, representative_id: int) -> None:
         raise typer.Exit(code=1) from exc
     updated = result.representative
     typer.echo(
-        f"Assigned representative {representative_id} to colony {colony_id}: colony_id={updated.assigned_to_colony_id}"
+        f"Assigned representative {representative_id} to colony {colony_id}: "
+        f"colony_id={updated.assigned_to_colony_id}"
     )
 
 
@@ -263,7 +269,8 @@ def import_colony(path: str) -> None:
     colony = import_data["colony"]
     representative = import_data["representative"]
     typer.echo(
-        f"Imported colony {colony.name} with representative {representative.name if representative else 'None'}"
+        f"Imported colony {colony.name} with representative "
+        f"{representative.name if representative else 'None'}"
     )
 
 

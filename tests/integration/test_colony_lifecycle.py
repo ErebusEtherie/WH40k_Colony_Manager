@@ -106,7 +106,11 @@ class TestColonyLifecycleInfrastructure:
     def test_add_infrastructure_updates_stats(self, auth_client):
         """Test adding infrastructure affects colony stats."""
         # Create colony
-        create_data = {"name": "Infra Test", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "Infra Test",
+            "founder_name": "Owner",
+            "colony_type": "mining_and_industry",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]
@@ -117,7 +121,11 @@ class TestColonyLifecycleInfrastructure:
         initial_productivity = initial_state["productivity"]["current"]
 
         # Add infrastructure (correct endpoint: /colonies/{id}/infrastructure)
-        infra_data = {"name": "Power Network", "infrastructure_type": "power_network", "state": "working"}
+        infra_data = {
+            "name": "Power Network",
+            "infrastructure_type": "power_network",
+            "state": "working",
+        }
         infra_response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/infrastructure", json=infra_data
         )
@@ -143,7 +151,11 @@ class TestColonyLifecycleInfrastructure:
         colony_id = colony["id"]
 
         # Add not working infrastructure (not_working = faulty/incapacitated)
-        infra_data = {"name": "Faulty Power Network", "infrastructure_type": "power_network", "state": "not_working"}
+        infra_data = {
+            "name": "Faulty Power Network",
+            "infrastructure_type": "power_network",
+            "state": "not_working",
+        }
         infra_response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/infrastructure", json=infra_data
         )
@@ -163,7 +175,11 @@ class TestColonyLifecycleDevelopment:
     def test_add_development_plan(self, auth_client):
         """Test adding development plan to colony."""
         # Create colony
-        create_data = {"name": "Dev Plan Test", "founder_name": "Owner", "colony_type": "agricultural"}
+        create_data = {
+            "name": "Dev Plan Test",
+            "founder_name": "Owner",
+            "colony_type": "agricultural",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]
@@ -190,7 +206,11 @@ class TestColonyLifecycleDevelopment:
     def test_add_support_upgrade(self, auth_client):
         """Test adding support upgrade to colony."""
         # Create colony (use valid colony_type from config)
-        create_data = {"name": "Upgrade Test", "founder_name": "Owner", "colony_type": "agricultural"}
+        create_data = {
+            "name": "Upgrade Test",
+            "founder_name": "Owner",
+            "colony_type": "agricultural",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]
@@ -209,7 +229,11 @@ class TestColonyLifecycleEvents:
     def test_add_colony_event(self, auth_client):
         """Test adding event to colony timeline."""
         # Create colony (use valid colony_type)
-        create_data = {"name": "Event Test", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "Event Test",
+            "founder_name": "Owner",
+            "colony_type": "mining_and_industry",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]
@@ -238,7 +262,11 @@ class TestColonyLifecycleStats:
     def test_profit_factor_calculation(self, auth_client):
         """Test profit factor is calculated correctly."""
         # Create colony
-        create_data = {"name": "PF Test", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "PF Test",
+            "founder_name": "Owner",
+            "colony_type": "mining_and_industry",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]
@@ -254,7 +282,11 @@ class TestColonyLifecycleStats:
     def test_colony_state_transitions(self, auth_client):
         """Test colony state transitions (e.g., Anarchy, Placated)."""
         # Create colony (use valid colony_type)
-        create_data = {"name": "State Test", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+        create_data = {
+            "name": "State Test",
+            "founder_name": "Owner",
+            "colony_type": "mining_and_industry",
+        }
         colony_response = auth_client.post("/api/v1/colonies", json=create_data)
         colony = colony_response.json()
         colony_id = colony["id"]

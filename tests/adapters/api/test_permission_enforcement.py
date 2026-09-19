@@ -30,13 +30,13 @@ def test_client_with_auth(tmp_path: Path):
 
     # Initialize rule config provider (normally done in lifespan)
     init_rule_config_provider()
-    
+
     init_db(db_path)
     app = create_app()
     app.dependency_overrides[deps.get_db_path] = lambda: db_path
 
     client = TestClient(app)
-    
+
     # Login to get cookies (cookie-based auth)
     login_data = {"username": "testuser", "password": "TestPass123!"}
     # First register the user
@@ -47,12 +47,12 @@ def test_client_with_auth(tmp_path: Path):
     }
     client.post("/api/v1/auth/register", json=register_data)
     client.post("/api/v1/auth/login", json=login_data)
-    
+
     # Fetch CSRF token for state-changing requests (double-submit pattern)
     csrf_response = client.get("/api/v1/auth/csrf-token")
     csrf_token = csrf_response.json()["csrf_token"]
     client.headers["X-CSRF-Token"] = csrf_token
-    
+
     yield client
 
     app.dependency_overrides.clear()
@@ -76,12 +76,12 @@ def admin_user(test_client_with_auth, tmp_path, bootstrap_user):
     # Login to get cookies (this will replace the testuser cookies)
     login_data = {"username": "admin_user", "password": "AdminPass123!"}
     test_client_with_auth.post("/api/v1/auth/login", json=login_data)
-    
+
     # Refresh CSRF token for the new session
     csrf_response = test_client_with_auth.get("/api/v1/auth/csrf-token")
     csrf_token = csrf_response.json()["csrf_token"]
     test_client_with_auth.headers["X-CSRF-Token"] = csrf_token
-    
+
     return test_client_with_auth
 
 
@@ -100,12 +100,12 @@ def regular_user(test_client_with_auth, tmp_path, bootstrap_user):
     # Login to get cookies
     login_data = {"username": "regular_user", "password": "RegularPass123!"}
     test_client_with_auth.post("/api/v1/auth/login", json=login_data)
-    
+
     # Refresh CSRF token for the new session
     csrf_response = test_client_with_auth.get("/api/v1/auth/csrf-token")
     csrf_token = csrf_response.json()["csrf_token"]
     test_client_with_auth.headers["X-CSRF-Token"] = csrf_token
-    
+
     return test_client_with_auth
 
 
@@ -201,7 +201,11 @@ class TestCrossColonyIsolation:
     ):
         """Users cannot access infrastructure in colonies they don't own."""
         # colony_owner fixture already set up cookies
-        create_data = {"name": "Second Colony", "founder_name": "Owner", "colony_type": "research_mission"}
+        create_data = {
+            "name": "Second Colony",
+            "founder_name": "Owner",
+            "colony_type": "research_mission",
+        }
         response = test_client_with_auth.post("/api/v1/colonies", json=create_data)
         assert response.status_code == 201
         second_colony_id = response.json()["id"]
@@ -224,7 +228,7 @@ class TestCrossColonyIsolation:
             )
             login_data = {"username": "other_user", "password": "OtherPass123!"}
             test_client_with_auth.post("/api/v1/auth/login", json=login_data)
-            
+
             # Refresh CSRF token for the new session
             csrf_response = test_client_with_auth.get("/api/v1/auth/csrf-token")
             csrf_token = csrf_response.json()["csrf_token"]
@@ -250,12 +254,12 @@ def colony_owner(test_client_with_auth, tmp_path, bootstrap_user):
     )
     login_data = {"username": "colony_owner", "password": "OwnerPass123!"}
     test_client_with_auth.post("/api/v1/auth/login", json=login_data)
-    
+
     # Refresh CSRF token for the new session
     csrf_response = test_client_with_auth.get("/api/v1/auth/csrf-token")
     csrf_token = csrf_response.json()["csrf_token"]
     test_client_with_auth.headers["X-CSRF-Token"] = csrf_token
-    
+
     return test_client_with_auth
 
 

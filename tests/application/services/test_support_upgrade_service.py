@@ -157,14 +157,14 @@ class TestSupportUpgradeServiceQueries:
         colony1 = _create_colony(colony_repo, "Colony 1")
         colony2 = _create_colony(colony_repo, "Colony 2")
 
-        for i in range(3):
+        for _i in range(3):
             upgrade = SupportUpgrade(
                 colony_id=colony1.id,
                 upgrade_type=SupportUpgradeType.INFANTRY_GARRISON,
             )
             service.create_upgrade(upgrade, changed_by=50)
 
-        for i in range(2):
+        for _i in range(2):
             upgrade = SupportUpgrade(
                 colony_id=colony2.id,
                 upgrade_type=SupportUpgradeType.CONTACTS,

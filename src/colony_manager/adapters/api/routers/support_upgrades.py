@@ -44,7 +44,11 @@ def _check_colony_exists(service: SupportUpgradeService, colony_id: int) -> None
         raise HTTPException(status_code=404, detail=f"Colony {colony_id} not found")
 
 
-@router.get("", response_model=PaginatedResponse[SupportUpgradeListItem], responses={404: {"description": "Colony not found"}})
+@router.get(
+    "",
+    response_model=PaginatedResponse[SupportUpgradeListItem],
+    responses={404: {"description": "Colony not found"}},
+)
 async def list_upgrades(
     colony_id: int,
     current_user: Annotated[User, Depends(require_colony_permission("view"))],
@@ -53,7 +57,18 @@ async def list_upgrades(
         default=None,
         alias="type",
         description="Filter by upgrade type",
-        examples=["arbites_precinct", "ecclesioarchy_mission", "mechanicum_station", "cultural_improvement", "industrial_facility", "contacts", "infantry_garrison", "imperial_navy_station", "personal_lodgings", "trappings"],
+        examples=[
+            "arbites_precinct",
+            "ecclesioarchy_mission",
+            "mechanicum_station",
+            "cultural_improvement",
+            "industrial_facility",
+            "contacts",
+            "infantry_garrison",
+            "imperial_navy_station",
+            "personal_lodgings",
+            "trappings",
+        ],
     ),
     name_search: str | None = Query(
         default=None,
@@ -69,7 +84,7 @@ async def list_upgrades(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of items to return"),
 ) -> PaginatedResponse[SupportUpgradeListItem]:
     """List all support upgrades for a colony with pagination and filtering.
-    
+
     Filters:
     - type: Filter by upgrade type (arbites_precinct, ecclesioarchy_mission, etc.)
     - search: Search by name (case-insensitive substring match)
@@ -82,20 +97,22 @@ async def list_upgrades(
     """
     _check_colony_exists(service, colony_id)
     all_upgrades = service.list_by_colony(colony_id)
-    
+
     filtered = all_upgrades
-    
+
     if type_filter is not None:
         filtered = [u for u in filtered if u.upgrade_type == type_filter]
-    
+
     if name_search is not None:
         search_lower = name_search.lower()
         filtered = [u for u in filtered if search_lower in u.name.lower()]
-    
+
     if affiliated_group is not None:
         group_lower = affiliated_group.lower()
-        filtered = [u for u in filtered if u.affiliated_group and group_lower in u.affiliated_group.lower()]
-    
+        filtered = [
+            u for u in filtered if u.affiliated_group and group_lower in u.affiliated_group.lower()
+        ]
+
     # Calculate pagination
     total = len(filtered)
     items = filtered[offset : offset + limit]
@@ -122,7 +139,12 @@ async def list_upgrades(
     )
 
 
-@router.post("", response_model=SupportUpgradeResponse, status_code=status.HTTP_201_CREATED, responses={404: {"description": "Colony not found"}})
+@router.post(
+    "",
+    response_model=SupportUpgradeResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={404: {"description": "Colony not found"}},
+)
 async def create_upgrade(
     colony_id: int,
     upgrade_data: SupportUpgradeCreate,
@@ -157,7 +179,11 @@ async def create_upgrade(
     )
 
 
-@router.get("/{upgrade_id}", response_model=SupportUpgradeResponse, responses={404: {"description": "Colony or support upgrade not found"}})
+@router.get(
+    "/{upgrade_id}",
+    response_model=SupportUpgradeResponse,
+    responses={404: {"description": "Colony or support upgrade not found"}},
+)
 async def get_upgrade(
     colony_id: int,
     upgrade_id: int,
@@ -186,14 +212,20 @@ async def get_upgrade(
             has_stat_effect=upgrade.has_stat_effect,
         )
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"SupportUpgrade {upgrade_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"SupportUpgrade {upgrade_id} not found",
+        ) from None
 
 
 @router.patch(
     "/{upgrade_id}",
     response_model=SupportUpgradeResponse | SupportUpgradeValidationResponse,
     summary="Update support upgrade",
-    description="Update support upgrade name, notes, or type-specific fields. Use `validate_only=true` to preview effects without applying.",
+    description=(
+        "Update support upgrade name, notes, or type-specific fields. "
+        "Use `validate_only=true` to preview effects without applying."
+    ),
     responses={404: {"description": "Colony or support upgrade not found"}},
 )
 async def update_upgrade(
@@ -218,8 +250,10 @@ async def update_upgrade(
         # If validate_only, return preview of changes
         if validate_only:
             # Build update data dict for preview
-            # Note: Dict values are heterogeneous types (str, ModifierStat, etc.) validated by Pydantic.
-            # We use type: ignore[assignment] because mypy can't infer the union type of dict values.
+            # Note: Dict values are heterogeneous types (str, ModifierStat, etc.)
+            # validated by Pydantic.
+            # We use type: ignore[assignment] because mypy can't infer the union
+            # type of dict values.
             update_data = {}
             if upgrade_data.custom_stat_choice is not None:
                 update_data["custom_stat_choice"] = upgrade_data.custom_stat_choice
@@ -267,10 +301,17 @@ async def update_upgrade(
             has_stat_effect=upgrade.has_stat_effect,
         )
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"SupportUpgrade {upgrade_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"SupportUpgrade {upgrade_id} not found",
+        ) from None
 
 
-@router.delete("/{upgrade_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Colony or support upgrade not found"}})
+@router.delete(
+    "/{upgrade_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Colony or support upgrade not found"}},
+)
 async def delete_upgrade(
     colony_id: int,
     upgrade_id: int,
@@ -288,4 +329,7 @@ async def delete_upgrade(
             )
         service.delete_upgrade(upgrade_id)
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"SupportUpgrade {upgrade_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"SupportUpgrade {upgrade_id} not found",
+        ) from None

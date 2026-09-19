@@ -103,6 +103,10 @@ sections:
         path: UI_REQ/SUMMARY.md
         summary: "Per-screen UI requirements; quick-reference index of UI_REQ/"
         relevance: ["ui-feature-work"]
+      - id: gemini-ui-guide
+        path: ../Gemini_UI/README.md
+        summary: "Gemini-generated FE UI/design-system guide set (tokens, 7 themes, component patterns, code templates, Docker deployment); sibling to docs/UI_DESIGN_SYSTEM.md, routed here so the manifest covers it"
+        relevance: ["ui-styling", "frontend-work"]
 
   - id: deployment
     path: deployment.md

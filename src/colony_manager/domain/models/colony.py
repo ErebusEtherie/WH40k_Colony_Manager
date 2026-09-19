@@ -75,15 +75,23 @@ class Colony(BaseModel):
         Note:
             When a roll is exactly due (age_days is a multiple of the interval and age > 0),
             days_since is 0 and days_until is also 0 (not the full interval).
-            
+
             At colony creation (age_days = 0), days_since is 0 but days_until is the full
             interval (first rolls happen at day 60/90, not day 0).
         """
         days_since_event = self.age_days % event_interval
         # At age 0, first roll is interval days away; at other boundaries, roll is due now
-        days_until_event = 0 if (days_since_event == 0 and self.age_days > 0) else event_interval - days_since_event
+        days_until_event = (
+            0
+            if (days_since_event == 0 and self.age_days > 0)
+            else event_interval - days_since_event
+        )
         days_since_dev = self.age_days % development_interval
-        days_until_dev = 0 if (days_since_dev == 0 and self.age_days > 0) else development_interval - days_since_dev
+        days_until_dev = (
+            0
+            if (days_since_dev == 0 and self.age_days > 0)
+            else development_interval - days_since_dev
+        )
         return {
             "days_since_event_roll": days_since_event,
             "days_until_event_roll": days_until_event,

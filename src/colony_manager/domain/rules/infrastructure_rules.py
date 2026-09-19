@@ -86,7 +86,10 @@ def get_infrastructure_modifiers(infrastructure: Infrastructure) -> list[Modifie
                 modifier_category=ModifierCategory.PERMANENT,
                 modifier_stat=ModifierStat(mod_config.stat),
                 modifier_value=mod_config.value,
-                description=f"{infrastructure.name} ({infrastructure.infrastructure_type.value} - {infrastructure.state.value})",
+                description=(
+                    f"{infrastructure.name} ({infrastructure.infrastructure_type.value} - "
+                    f"{infrastructure.state.value})"
+                ),
                 is_active=True,
                 source_entity_id=infrastructure.id,
             )
@@ -166,7 +169,9 @@ def get_missing_infrastructure_penalty(
             modifier_category=ModifierCategory.PERMANENT,
             modifier_stat=ModifierStat.COMPLACENCY,
             modifier_value=total_penalty,
-            description=f"Missing Infrastructure (-1 per type not Working, {missing_count} missing)",
+            description=(
+                f"Missing Infrastructure (-1 per type not Working, {missing_count} missing)"
+            ),
             is_active=True,
         )
     ]

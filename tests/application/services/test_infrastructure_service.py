@@ -165,7 +165,7 @@ class TestInfrastructureServiceQueries:
         colony1 = _create_colony(colony_repo, "Colony 1")
         colony2 = _create_colony(colony_repo, "Colony 2")
 
-        for i in range(3):
+        for _i in range(3):
             infra = Infrastructure(
                 colony_id=colony1.id,
                 infrastructure_type=InfrastructureType.POWER_NETWORK,
@@ -173,7 +173,7 @@ class TestInfrastructureServiceQueries:
             )
             service.create_infrastructure(infra, changed_by=50)
 
-        for i in range(2):
+        for _i in range(2):
             infra = Infrastructure(
                 colony_id=colony2.id,
                 infrastructure_type=InfrastructureType.COMMUNICATIONS,

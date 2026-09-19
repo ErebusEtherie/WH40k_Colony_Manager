@@ -82,7 +82,7 @@ class TestResourceRepository:
         repo.delete(saved.id)
         try:
             repo.get(saved.id)
-            assert False
+            raise AssertionError()
         except ValueError:
             pass  # Expected
 
@@ -163,7 +163,7 @@ class TestResourceRepository:
         repo = SqlAlchemyResourceRepository("sqlite:///:memory:")
         try:
             repo.get(9999)
-            assert False
+            raise AssertionError()
         except ValueError as e:
             assert "not found" in str(e).lower()
 
@@ -179,7 +179,7 @@ class TestResourceRepository:
         )
         try:
             repo.update(resource)
-            assert False
+            raise AssertionError()
         except ValueError as e:
             assert "not found" in str(e).lower()
 

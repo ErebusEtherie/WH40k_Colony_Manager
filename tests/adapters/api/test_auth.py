@@ -229,7 +229,9 @@ class TestTokenRefresh:
         assert response.status_code == 200
         assert "message" in response.json()
 
-    def test_refresh_rotation_rejects_reused_refresh_token(self, test_client_with_auth, registered_user):
+    def test_refresh_rotation_rejects_reused_refresh_token(
+        self, test_client_with_auth, registered_user
+    ):
         """Test that a consumed refresh token cannot be replayed after rotation.
 
         The refresh endpoint revokes the refresh token it consumes and issues a
@@ -389,7 +391,9 @@ class TestChangePassword:
 class TestRoleBasedAuthorization:
     """Tests for role-based access control."""
 
-    def test_admin_user_can_access_admin_endpoints(self, test_client_with_auth, tmp_path, bootstrap_user):
+    def test_admin_user_can_access_admin_endpoints(
+        self, test_client_with_auth, tmp_path, bootstrap_user
+    ):
         """Test admin user has proper role.
 
         /auth/register only creates VIEWER users, so an admin is bootstrapped
@@ -497,7 +501,9 @@ class TestRoleBasedAuthorization:
         test_client_with_auth.post("/api/v1/auth/login", json=login_data)
 
         # Try with valid cookies
-        response_with_auth = test_client_with_auth.get(f"/api/v1/colonies/{colony_id}/infrastructure")
+        response_with_auth = test_client_with_auth.get(
+            f"/api/v1/colonies/{colony_id}/infrastructure"
+        )
         assert response_with_auth.status_code == 200
 
 
@@ -506,7 +512,7 @@ class TestOpenAPISecurity:
 
     def test_openapi_no_bearer_security_scheme(self, test_client_with_auth):
         """Test that OpenAPI schema does not include Bearer token security scheme.
-        
+
         Cookie-based authentication is used instead of Bearer tokens.
         Cookies are automatically sent by browsers and don't need explicit
         OpenAPI security schemes.
@@ -515,7 +521,7 @@ class TestOpenAPISecurity:
         assert response.status_code == 200
 
         openapi_schema = response.json()
-        
+
         # Bearer scheme should not exist
         if "components" in openapi_schema and "securitySchemes" in openapi_schema["components"]:
             security_schemes = openapi_schema["components"]["securitySchemes"]
@@ -523,7 +529,7 @@ class TestOpenAPISecurity:
 
     def test_openapi_no_global_security_requirement(self, test_client_with_auth):
         """Test that OpenAPI schema has no global security requirement.
-        
+
         Cookie-based authentication is handled via middleware, not OpenAPI security schemes.
         """
         response = test_client_with_auth.get("/openapi.json")
@@ -567,7 +573,7 @@ class TestOpenAPISecurity:
 
     def test_protected_endpoints_have_no_explicit_security_requirement(self, test_client_with_auth):
         """Test that protected endpoints don't have explicit security requirements.
-        
+
         Cookie-based authentication is enforced by middleware, not OpenAPI security schemes.
         Endpoints rely on implicit cookie authentication rather than explicit security requirements.
         """

@@ -305,7 +305,10 @@ class TestRepresentativeValidators:
             name="quite_a_character",
             display_name="Quite a character",
             description="This representative is uniquely complex.",
-            special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+            special_rule=(
+                "Increases maximum personality limit based on position: first=4, "
+                "second=3, third+=2."
+            ),
         )
 
         # 4 personalities with Quite a Character first is valid
@@ -352,7 +355,10 @@ class TestRepresentativeValidators:
             name="quite_a_character",
             display_name="Quite a character",
             description="This representative is uniquely complex.",
-            special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+            special_rule=(
+                "Increases maximum personality limit based on position: first=4, "
+                "second=3, third+=2."
+            ),
         )
 
         # 3 personalities with Quite a Character second is valid
@@ -397,7 +403,10 @@ class TestRepresentativeValidators:
             name="quite_a_character",
             display_name="Quite a character",
             description="This representative is uniquely complex.",
-            special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+            special_rule=(
+                "Increases maximum personality limit based on position: first=4, "
+                "second=3, third+=2."
+            ),
         )
 
         # 3 personalities with Quite a Character third is invalid (exceeds base limit)
@@ -424,7 +433,10 @@ class TestRepresentativeValidators:
             name="quite_a_character",
             display_name="Quite a character",
             description="Test",
-            special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+            special_rule=(
+                "Increases maximum personality limit based on position: first=4, "
+                "second=3, third+=2."
+            ),
         )
         assert Representative._is_quite_a_character(quite_a_character) is True
 
@@ -441,7 +453,10 @@ class TestRepresentativeValidators:
             name="test",
             display_name="Test",
             description="Test",
-            special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+            special_rule=(
+                "Increases maximum personality limit based on position: first=4, "
+                "second=3, third+=2."
+            ),
         )
         assert Representative._is_quite_a_character(other_personality) is False
 
@@ -533,7 +548,10 @@ class TestRepresentativeProperties:
                     display_name="Quite a character",
                     description="This representative is uniquely complex.",
                     calamitous_modifier=5,
-                    special_rule="Increases maximum personality limit based on position: first=4, second=3, third+=2.",
+                    special_rule=(
+                        "Increases maximum personality limit based on position: first=4, "
+                        "second=3, third+=2."
+                    ),
                 ),
                 Personality(
                     name="normal",

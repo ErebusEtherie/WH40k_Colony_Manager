@@ -44,7 +44,11 @@ def _check_colony_exists(service: InfrastructureService, colony_id: int) -> None
         raise HTTPException(status_code=404, detail=f"Colony {colony_id} not found")
 
 
-@router.get("", response_model=PaginatedResponse[InfrastructureListItem], responses={404: {"description": "Colony not found"}})
+@router.get(
+    "",
+    response_model=PaginatedResponse[InfrastructureListItem],
+    responses={404: {"description": "Colony not found"}},
+)
 async def list_infrastructure(
     colony_id: int,
     current_user: Annotated[User, Depends(require_colony_permission("view"))],
@@ -70,7 +74,7 @@ async def list_infrastructure(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of items to return"),
 ) -> PaginatedResponse[InfrastructureListItem]:
     """List all infrastructure for a colony with pagination and filtering.
-    
+
     Filters:
     - state: Filter by operational state (working, planned, in_progress, needed, not_working)
     - type: Filter by infrastructure type (transport, power, housing, etc.)
@@ -83,23 +87,23 @@ async def list_infrastructure(
     """
     _check_colony_exists(service, colony_id)
     all_infrastructure = service.list_by_colony(colony_id)
-    
+
     filtered = all_infrastructure
-    
+
     if state_filter is not None:
         filtered = [i for i in filtered if i.state == state_filter]
-    
+
     if type_filter is not None:
         filtered = [i for i in filtered if i.infrastructure_type == type_filter]
-    
+
     if name_search is not None:
         search_lower = name_search.lower()
         filtered = [i for i in filtered if search_lower in i.name.lower()]
-    
+
     # Calculate pagination
     total = len(filtered)
     items = filtered[offset : offset + limit]
-    
+
     return PaginatedResponse(
         items=[
             InfrastructureListItem(
@@ -122,7 +126,12 @@ async def list_infrastructure(
     )
 
 
-@router.post("", response_model=InfrastructureResponse, status_code=status.HTTP_201_CREATED, responses={404: {"description": "Colony not found"}})
+@router.post(
+    "",
+    response_model=InfrastructureResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={404: {"description": "Colony not found"}},
+)
 async def create_infrastructure(
     colony_id: int,
     infra_data: InfrastructureCreate,
@@ -155,7 +164,11 @@ async def create_infrastructure(
     )
 
 
-@router.get("/{infrastructure_id}", response_model=InfrastructureResponse, responses={404: {"description": "Colony or infrastructure not found"}})
+@router.get(
+    "/{infrastructure_id}",
+    response_model=InfrastructureResponse,
+    responses={404: {"description": "Colony or infrastructure not found"}},
+)
 async def get_infrastructure(
     colony_id: int,
     infrastructure_id: int,
@@ -184,14 +197,20 @@ async def get_infrastructure(
             is_not_working=infrastructure.is_not_working,
         )
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"Infrastructure {infrastructure_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Infrastructure {infrastructure_id} not found",
+        ) from None
 
 
 @router.patch(
     "/{infrastructure_id}",
     response_model=InfrastructureResponse | InfrastructureValidationResponse,
     summary="Update infrastructure",
-    description="Update infrastructure name, notes, or state. Use `validate_only=true` to preview effects without applying.",
+    description=(
+        "Update infrastructure name, notes, or state. Use `validate_only=true` "
+        "to preview effects without applying."
+    ),
     responses={404: {"description": "Colony or infrastructure not found"}},
 )
 async def update_infrastructure(
@@ -254,10 +273,17 @@ async def update_infrastructure(
             is_not_working=infrastructure.is_not_working,
         )
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"Infrastructure {infrastructure_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Infrastructure {infrastructure_id} not found",
+        ) from None
 
 
-@router.delete("/{infrastructure_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Colony or infrastructure not found"}})
+@router.delete(
+    "/{infrastructure_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Colony or infrastructure not found"}},
+)
 async def delete_infrastructure(
     colony_id: int,
     infrastructure_id: int,
@@ -275,4 +301,7 @@ async def delete_infrastructure(
             )
         service.delete_infrastructure(infrastructure_id)
     except NotFoundError:
-        raise HTTPException(status_code=404, detail=f"Infrastructure {infrastructure_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Infrastructure {infrastructure_id} not found",
+        ) from None

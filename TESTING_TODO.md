@@ -1,9 +1,9 @@
 # Testing ToDo List
 
-**Last Updated:** 2026-09-01
+**Last Updated:** 2026-09-20
 **Current Status:**
 
-- Backend: 803 tests passing, 100% pass rate (4 skipped)
+- Backend: 843 collected, 839 passed + 4 skipped (100% pass rate)
 - Frontend: 87 tests passing, 0 skipped (11 test files)
 
 This document tracks testing priorities and progress for the WH40k Colony Manager project.
@@ -13,7 +13,7 @@ It complements .clinerules/04-testing-strategy.md with specific implementation t
 
 ## Current Test Coverage Summary
 
-### ✅ Backend Tests (52+ files, 803 tests)
+### ✅ Backend Tests (52+ files, 843 tests)
 
 | Category | Files | Tests | Status |
 |----------|-------|-------|--------|
@@ -25,7 +25,7 @@ It complements .clinerules/04-testing-strategy.md with specific implementation t
 | **Security** | 4 files | 40+ | ✅ Complete |
 | **Integration** | 3 files | 26+ | ✅ Complete (Phase 3 added 6 permission tests) |
 | **CLI/Config/IO** | 4 files | 30+ | ✅ Complete |
-| **Total** | **52+ files** | **803 tests** | ✅ **100% passing** |
+| **Total** | **52+ files** | **843 tests** | ✅ **100% passing** |
 
 ### Test Patterns in Use
 
@@ -95,7 +95,11 @@ Existing workflow tests cover:
 |-------|-------------|------------------------|
 | Phase 1 | ~777 | 52+ files |
 | Phase 3 | 6 | 1 file (test_auth_flow.py) |
-| **Total** | **803** | **52+ files** |
+| **Total** | **843** | **52+ files** |
+
+> Test count measured via `uv run pytest --collect-only -q` on 2026-09-20
+> (843 collected nodes; includes parametrized tests). Category rows above are
+> approximate — verified totals are in the table's Total row.
 
 ### Notes
 

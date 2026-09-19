@@ -10,7 +10,11 @@ class TestResourcesAPI:
         """Test creating a new planetary resource for a colony."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Resource Test Colony", "founder_name": "Test Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Resource Test Colony",
+                "founder_name": "Test Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         resource_data = {
@@ -33,7 +37,11 @@ class TestResourcesAPI:
         """Test retrieving all resources for a colony."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Multi-Resource Colony", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Multi-Resource Colony",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(3):
@@ -59,7 +67,9 @@ class TestResourcesAPI:
         )
         colony_id = colony_response.json()["id"]
         resource_data = {"resource_type": "mineral", "name": "Test Resource", "abundance": 40}
-        resource_response = auth_client.post(f"/api/v1/colonies/{colony_id}/resources", json=resource_data)
+        resource_response = auth_client.post(
+            f"/api/v1/colonies/{colony_id}/resources", json=resource_data
+        )
         resource_id = resource_response.json()["id"]
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/resources/{resource_id}")
         assert response.status_code == 200
@@ -72,14 +82,22 @@ class TestResourcesAPI:
         """Test updating a resource\'s abundance or notes."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Update Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Update Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         resource_data = {"resource_type": "mineral", "name": "Original Resource", "abundance": 30}
-        resource_response = auth_client.post(f"/api/v1/colonies/{colony_id}/resources", json=resource_data)
+        resource_response = auth_client.post(
+            f"/api/v1/colonies/{colony_id}/resources", json=resource_data
+        )
         resource_id = resource_response.json()["id"]
         update_data = {"abundance": 75, "notes": "Updated notes"}
-        response = auth_client.patch(f"/api/v1/colonies/{colony_id}/resources/{resource_id}", json=update_data)
+        response = auth_client.patch(
+            f"/api/v1/colonies/{colony_id}/resources/{resource_id}", json=update_data
+        )
         assert response.status_code == 200
         resource = response.json()
         assert resource["abundance"] == 75
@@ -89,11 +107,17 @@ class TestResourcesAPI:
         """Test deleting a resource from a colony."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Delete Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Delete Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         resource_data = {"resource_type": "mineral", "name": "To Delete", "abundance": 20}
-        resource_response = auth_client.post(f"/api/v1/colonies/{colony_id}/resources", json=resource_data)
+        resource_response = auth_client.post(
+            f"/api/v1/colonies/{colony_id}/resources", json=resource_data
+        )
         resource_id = resource_response.json()["id"]
         response = auth_client.delete(f"/api/v1/colonies/{colony_id}/resources/{resource_id}")
         assert response.status_code == 204
@@ -114,7 +138,7 @@ class TestResourcesAPI:
 
     def test_create_resource_unauthorized(self, test_client: TestClient):
         """Test creating resource without authentication fails.
-        
+
         Note: Returns 403 (CSRF failure) rather than 401 because CSRF
         middleware runs before auth middleware for POST requests.
         """
@@ -122,7 +146,3 @@ class TestResourcesAPI:
         response = test_client.post("/api/v1/colonies/1/resources", json=resource_data)
         # CSRF check fails first (403) before auth check (401)
         assert response.status_code in (401, 403)
-
-
-
-

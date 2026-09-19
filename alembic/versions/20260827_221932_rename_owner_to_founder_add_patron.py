@@ -5,9 +5,11 @@ Revises: f6a9a7be18f0
 Create Date: 2026-08-27
 
 """
+
 from __future__ import annotations
 
 import sqlalchemy as sa
+
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -27,7 +29,7 @@ def upgrade() -> None:
         existing_type=sa.String(255),
         existing_nullable=False,
     )
-    
+
     # Add patron_name column (nullable, optional)
     op.add_column(
         "colonies",
@@ -39,7 +41,7 @@ def downgrade() -> None:
     """Revert founder_name back to owner and remove patron_name."""
     # Remove patron_name column
     op.drop_column("colonies", "patron_name")
-    
+
     # Rename founder_name back to owner
     op.alter_column(
         "colonies",

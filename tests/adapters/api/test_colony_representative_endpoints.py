@@ -1,6 +1,5 @@
 """Colony-based representative assignment endpoint tests."""
 
-import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -82,8 +81,20 @@ class TestColonyRepresentativeEndpoints:
             json={
                 "name": "Rep One",
                 "type": "judge",
-                "personalities": [{"name": "lawful", "display_name": "Lawful", "description": "Lawful."}],
-                "stats": {"ws": 30, "bs": 30, "s": 30, "t": 30, "ag": 30, "int": 50, "per": 40, "wp": 60, "fel": 50},
+                "personalities": [
+                    {"name": "lawful", "display_name": "Lawful", "description": "Lawful."}
+                ],
+                "stats": {
+                    "ws": 30,
+                    "bs": 30,
+                    "s": 30,
+                    "t": 30,
+                    "ag": 30,
+                    "int": 50,
+                    "per": 40,
+                    "wp": 60,
+                    "fel": 50,
+                },
                 "skills": [],
                 "talents": [],
             },
@@ -95,8 +106,20 @@ class TestColonyRepresentativeEndpoints:
             json={
                 "name": "Rep Two",
                 "type": "cardinal",
-                "personalities": [{"name": "devout", "display_name": "Devout", "description": "Devout."}],
-                "stats": {"ws": 30, "bs": 30, "s": 30, "t": 30, "ag": 30, "int": 40, "per": 50, "wp": 60, "fel": 40},
+                "personalities": [
+                    {"name": "devout", "display_name": "Devout", "description": "Devout."}
+                ],
+                "stats": {
+                    "ws": 30,
+                    "bs": 30,
+                    "s": 30,
+                    "t": 30,
+                    "ag": 30,
+                    "int": 40,
+                    "per": 50,
+                    "wp": 60,
+                    "fel": 40,
+                },
                 "skills": [],
                 "talents": [],
             },
@@ -127,7 +150,9 @@ class TestColonyRepresentativeEndpoints:
         assert get_rep1_response.status_code == status.HTTP_200_OK
 
     def test_unassign_representative_via_colony_endpoint(self, auth_client: TestClient) -> None:
-        """Test unassigning a representative from a colony via DELETE /colonies/{id}/representative."""
+        """Test unassigning a representative from a colony via
+        DELETE /colonies/{id}/representative.
+        """
         # Create colony
         colony_response = auth_client.post(
             "/api/v1/colonies",
@@ -145,8 +170,20 @@ class TestColonyRepresentativeEndpoints:
             json={
                 "name": "Test Rep",
                 "type": "judge",
-                "personalities": [{"name": "lawful", "display_name": "Lawful", "description": "Lawful."}],
-                "stats": {"ws": 30, "bs": 30, "s": 30, "t": 30, "ag": 30, "int": 50, "per": 40, "wp": 60, "fel": 50},
+                "personalities": [
+                    {"name": "lawful", "display_name": "Lawful", "description": "Lawful."}
+                ],
+                "stats": {
+                    "ws": 30,
+                    "bs": 30,
+                    "s": 30,
+                    "t": 30,
+                    "ag": 30,
+                    "int": 50,
+                    "per": 40,
+                    "wp": 60,
+                    "fel": 50,
+                },
                 "skills": [],
                 "talents": [],
             },
@@ -213,8 +250,20 @@ class TestColonyRepresentativeEndpoints:
             json={
                 "name": "Test Rep",
                 "type": "judge",
-                "personalities": [{"name": "lawful", "display_name": "Lawful", "description": "Lawful."}],
-                "stats": {"ws": 30, "bs": 30, "s": 30, "t": 30, "ag": 30, "int": 50, "per": 40, "wp": 60, "fel": 50},
+                "personalities": [
+                    {"name": "lawful", "display_name": "Lawful", "description": "Lawful."}
+                ],
+                "stats": {
+                    "ws": 30,
+                    "bs": 30,
+                    "s": 30,
+                    "t": 30,
+                    "ag": 30,
+                    "int": 50,
+                    "per": 40,
+                    "wp": 60,
+                    "fel": 50,
+                },
                 "skills": [],
                 "talents": [],
             },
@@ -223,7 +272,7 @@ class TestColonyRepresentativeEndpoints:
 
         # Try to assign to non-existent colony
         assign_response = auth_client.put(
-            f"/api/v1/colonies/99999/representative",
+            "/api/v1/colonies/99999/representative",
             params={"representative_id": rep_id},
         )
         assert assign_response.status_code == status.HTTP_404_NOT_FOUND

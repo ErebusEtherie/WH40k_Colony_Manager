@@ -32,7 +32,11 @@ class TestAuditLogsAPI:
         """Test filtering audit logs by entity type."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Filter Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Filter Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         event_data = {"name": "Test Event", "description": "Test", "modifiers": []}
@@ -146,12 +150,20 @@ class TestAuditLogsAPI:
         # Create two colonies
         colony1_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Colony 1", "founder_name": "Owner1", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Colony 1",
+                "founder_name": "Owner1",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony1_id = colony1_response.json()["id"]
         colony2_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Colony 2", "founder_name": "Owner2", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Colony 2",
+                "founder_name": "Owner2",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony2_id = colony2_response.json()["id"]
 
@@ -172,7 +184,11 @@ class TestAuditLogsAPI:
         """Test that audit log entries contain all required fields."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Fields Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Fields Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         event_data = {"name": "Test Event", "description": "Test", "modifiers": []}

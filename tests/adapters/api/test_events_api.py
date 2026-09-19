@@ -74,7 +74,11 @@ class TestEventsAPI:
         """Test updating an event."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Update Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Update Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         event_data = {
@@ -100,7 +104,11 @@ class TestEventsAPI:
         """Test deleting (soft delete) an event."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Delete Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Delete Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         event_data = {"name": "To Delete", "description": "Will be deleted", "modifiers": []}
@@ -120,7 +128,7 @@ class TestEventsAPI:
 
     def test_create_event_unauthorized(self, test_client: TestClient):
         """Test creating event without authentication fails.
-        
+
         Note: Returns 403 (CSRF failure) rather than 401 because CSRF
         middleware runs before auth middleware for POST requests.
         """
@@ -133,7 +141,11 @@ class TestEventsAPI:
         """Test retrieving only active events for a colony."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Active Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Active Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(3):
@@ -155,13 +167,17 @@ class TestEventsPaginationAndFiltering:
         """Test events pagination with offset, limit, has_more, total."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Pagination Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Pagination Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(25):
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []}
+                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []},
             )
         response = auth_client.get(f"/api/v1/events/colonies/{colony_id}")
         data = response.json()
@@ -175,13 +191,17 @@ class TestEventsPaginationAndFiltering:
         """Test pagination boundary conditions."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Edge Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Edge Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(10):
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []}
+                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []},
             )
         # Test exact page size
         response = auth_client.get(f"/api/v1/events/colonies/{colony_id}?limit=10")
@@ -203,13 +223,17 @@ class TestEventsPaginationAndFiltering:
         """Test filtering events by active status."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Active Filter", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Active Filter",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(5):
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []}
+                json={"name": f"Event {i}", "description": f"Description {i}", "modifiers": []},
             )
         # Deactivate first 2 events
         events_response = auth_client.get(f"/api/v1/events/colonies/{colony_id}")
@@ -225,7 +249,11 @@ class TestEventsPaginationAndFiltering:
         """Test filtering events by name search."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Search Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Search Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         test_data = [
@@ -238,7 +266,7 @@ class TestEventsPaginationAndFiltering:
         for item in test_data:
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": item["name"], "description": item["description"], "modifiers": []}
+                json={"name": item["name"], "description": item["description"], "modifiers": []},
             )
         response = auth_client.get(f"/api/v1/events/colonies/{colony_id}?name_search=storm")
         data = response.json()
@@ -249,7 +277,11 @@ class TestEventsPaginationAndFiltering:
         """Test combining active_only and search filters."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Combined Filter", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Combined Filter",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         test_data = [
@@ -260,12 +292,14 @@ class TestEventsPaginationAndFiltering:
         for item in test_data:
             event_response = auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": item["name"], "description": item["description"], "modifiers": []}
+                json={"name": item["name"], "description": item["description"], "modifiers": []},
             )
             if not item["is_active"]:
                 event_id = event_response.json()["id"]
                 auth_client.patch(f"/api/v1/events/{event_id}", json={"is_active": False})
-        response = auth_client.get(f"/api/v1/events/colonies/{colony_id}?active_only=true&name_search=storm")
+        response = auth_client.get(
+            f"/api/v1/events/colonies/{colony_id}?active_only=true&name_search=storm"
+        )
         data = response.json()
         assert len(data["items"]) == 1, f"Expected 1 item, got {len(data['items'])}"
         assert data["items"][0]["name"] == "Warp Storm Active"
@@ -274,18 +308,30 @@ class TestEventsPaginationAndFiltering:
         """Test combining filters with pagination."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "FilterPag", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "FilterPag",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         for i in range(15):
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": f"Warp Event {i}", "description": f"Description {i}", "modifiers": []}
+                json={
+                    "name": f"Warp Event {i}",
+                    "description": f"Description {i}",
+                    "modifiers": [],
+                },
             )
         for i in range(10):
             auth_client.post(
                 f"/api/v1/events/colonies/{colony_id}",
-                json={"name": f"Other Event {i}", "description": f"Description {i}", "modifiers": []}
+                json={
+                    "name": f"Other Event {i}",
+                    "description": f"Description {i}",
+                    "modifiers": [],
+                },
             )
         response = auth_client.get(f"/api/v1/events/colonies/{colony_id}?name_search=warp&limit=5")
         data = response.json()
@@ -297,7 +343,11 @@ class TestEventsPaginationAndFiltering:
         """Test listing events for colony with no events."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Empty Events", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Empty Events",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         response = auth_client.get(f"/api/v1/events/colonies/{colony_id}")

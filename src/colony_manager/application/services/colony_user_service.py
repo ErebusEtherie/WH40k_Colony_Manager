@@ -29,10 +29,10 @@ class ColonyUserService:
 
     def _validate_user_exists(self, user_id: int) -> None:
         """Validate that a user exists in the system.
-        
+
         Args:
             user_id: ID of the user to validate.
-            
+
         Raises:
             NotFoundError: If user does not exist.
         """

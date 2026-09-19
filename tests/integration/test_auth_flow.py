@@ -14,7 +14,7 @@ from colony_manager.adapters.persistence.db import init_db
 def integration_client(tmp_path: Path):
     """Create test client with isolated database for integration tests."""
     from colony_manager.adapters.api.dependencies import init_rule_config_provider
-    
+
     db_path = tmp_path / "test.db"
     os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-minimum-32-bytes"
 
@@ -89,7 +89,7 @@ class TestAuthFlowRegistration:
 
     def test_registration_to_authenticated_request(self, integration_client):
         """Test full flow: register → login → authenticated request.
-        
+
         Flow:
         1. Register new user with valid credentials
         2. Login to obtain access/refresh tokens
@@ -156,7 +156,7 @@ class TestAuthFlowRegistration:
 
     def test_registration_with_invalid_password(self, integration_client):
         """Test registration fails with weak password.
-        
+
         Password requirements:
         - Minimum 8 characters
         - At least one uppercase letter
@@ -172,7 +172,7 @@ class TestAuthFlowRegistration:
         }
         response = integration_client.post("/api/v1/auth/register", json=register_data)
         assert response.status_code == 422  # Validation error
-        
+
         # Test missing uppercase
         register_data = {
             "username": "weak_user",
@@ -182,7 +182,7 @@ class TestAuthFlowRegistration:
         response = integration_client.post("/api/v1/auth/register", json=register_data)
         assert response.status_code == 400
         assert "password" in response.json()["detail"].lower()
-        
+
         # Test missing number
         register_data = {
             "username": "weak_user",
@@ -192,7 +192,7 @@ class TestAuthFlowRegistration:
         response = integration_client.post("/api/v1/auth/register", json=register_data)
         assert response.status_code == 400
         assert "password" in response.json()["detail"].lower()
-        
+
         # Test missing special character
         register_data = {
             "username": "weak_user",
@@ -212,7 +212,7 @@ class TestAuthFlowRegistration:
         }
         response = integration_client.post("/api/v1/auth/register", json=register_data)
         assert response.status_code == 201
-        
+
         # Try to register same username with different email
         register_data["email"] = "second@example.com"
         response = integration_client.post("/api/v1/auth/register", json=register_data)
@@ -228,7 +228,7 @@ class TestAuthFlowRegistration:
         }
         response = integration_client.post("/api/v1/auth/register", json=register_data)
         assert response.status_code == 201
-        
+
         # Try to register same email with different username
         register_data["username"] = "second_user"
         response = integration_client.post("/api/v1/auth/register", json=register_data)
@@ -248,7 +248,7 @@ class TestAuthFlowLogin:
             "password": "SecurePass123!",
         }
         integration_client.post("/api/v1/auth/register", json=register_data)
-        
+
         # Try login with wrong password
         login_data = {
             "username": "login_user",
@@ -293,7 +293,7 @@ class TestAuthFlowMeEndpoint:
             "password": "SecurePass123!",
         }
         integration_client.post("/api/v1/auth/register", json=register_data)
-        
+
         login_data = {"username": "me_user", "password": "SecurePass123!"}
         login_response = integration_client.post("/api/v1/auth/login", json=login_data)
         assert login_response.status_code == 200
@@ -301,20 +301,20 @@ class TestAuthFlowMeEndpoint:
         me_response = integration_client.get("/api/v1/auth/me")
         assert me_response.status_code == 200
         me_data = me_response.json()
-        
+
         # Verify all expected fields are present
         assert "id" in me_data
         assert "username" in me_data
         assert "email" in me_data
         assert "role" in me_data
         assert "is_active" in me_data
-        
+
         # Verify values match registration data
         assert me_data["username"] == "me_user"
         assert me_data["email"] == "me@example.com"
         assert me_data["role"] == "viewer"
         assert me_data["is_active"] is True
-        
+
         # Verify sensitive data is NOT included
         assert "password" not in me_data
         assert "hashed_password" not in me_data
@@ -538,7 +538,7 @@ class TestAuthorizationPermissions:
 
         # Login as viewer_member to get their user ID
         _login_with_csrf(integration_client, "viewer_member", "SecurePass123!")
-        
+
         # Get viewer's user ID from /me endpoint
         me_response = integration_client.get("/api/v1/auth/me")
         viewer_id = me_response.json()["id"]
@@ -554,9 +554,7 @@ class TestAuthorizationPermissions:
         # Now login as viewer and try to edit colony
         _login_with_csrf(integration_client, "viewer_member", "SecurePass123!")
         edit_data = {"name": "Hacked Colony Name"}
-        edit_response = integration_client.put(
-            f"/api/v1/colonies/{colony_id}", json=edit_data
-        )
+        edit_response = integration_client.put(f"/api/v1/colonies/{colony_id}", json=edit_data)
         assert edit_response.status_code == 403
         assert "Insufficient colony permissions" in edit_response.json()["detail"]
 
@@ -564,7 +562,7 @@ class TestAuthorizationPermissions:
         """Test that editor role can edit colony."""
         # Clear any existing auth from previous tests
         integration_client.headers.pop("Authorization", None)
-        
+
         # Register and login as owner
         register_data = {
             "username": "owner_user",
@@ -592,7 +590,7 @@ class TestAuthorizationPermissions:
         }
         integration_client.post("/api/v1/auth/register", json=register_data2)
         _login_with_csrf(integration_client, "editor_user", "SecurePass123!")
-        
+
         # Get editor's user ID from /me endpoint
         me_response = integration_client.get("/api/v1/auth/me")
         editor_id = me_response.json()["id"]
@@ -608,9 +606,7 @@ class TestAuthorizationPermissions:
         # Login as editor and edit colony
         _login_with_csrf(integration_client, "editor_user", "SecurePass123!")
         edit_data = {"name": "Editor Updated Colony"}
-        edit_response = integration_client.put(
-            f"/api/v1/colonies/{colony_id}", json=edit_data
-        )
+        edit_response = integration_client.put(f"/api/v1/colonies/{colony_id}", json=edit_data)
         assert edit_response.status_code == 200
         assert edit_response.json()["name"] == "Editor Updated Colony"
 
@@ -651,9 +647,7 @@ class TestAuthorizationPermissions:
 
         # Admin can also edit colony they don't belong to (admin bypass)
         edit_data = {"name": "Admin Updated Colony"}
-        edit_response = integration_client.put(
-            f"/api/v1/colonies/{colony_id}", json=edit_data
-        )
+        edit_response = integration_client.put(f"/api/v1/colonies/{colony_id}", json=edit_data)
         assert edit_response.status_code == 200
 
     def test_user_cannot_access_unowned_colony(self, integration_client):

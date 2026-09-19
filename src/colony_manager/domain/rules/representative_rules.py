@@ -67,8 +67,8 @@ def get_personality_modifiers(
                     modifier_stat=ModifierStat(effect.stat),
                     modifier_value=effect.value,
                     description=f"Personality: {personality.name}",
-        is_active=True,
-        source_entity_id=representative.id,
+                    is_active=True,
+                    source_entity_id=representative.id,
                 )
             )
 
@@ -99,7 +99,9 @@ def _evaluate_condition(condition: str, current_order: int, current_size: int) -
     import warnings
 
     warnings.warn(
-        f"Unknown personality condition: '{condition}'. Effect not applied. Add handler in representative_rules._evaluate_condition()"
+        f"Unknown personality condition: '{condition}'. Effect not applied. "
+        f"Add handler in representative_rules._evaluate_condition()",
+        stacklevel=2,
     )
     return False
 

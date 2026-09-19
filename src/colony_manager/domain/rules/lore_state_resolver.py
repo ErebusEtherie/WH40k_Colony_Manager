@@ -16,11 +16,11 @@ from colony_manager.domain.enums import LoreState, ModifierStat
 
 def _resolve_complacency_state(value: int, size: int) -> LoreState:
     """Resolve Complacency state per Rogue Trader Colony Rules.
-    
+
     Args:
         value: Current Complacency value.
         size: Current colony Size for threshold comparison.
-    
+
     Returns:
         PLACATED if value > size, RIOTS_AND_UNREST if value == 0, otherwise STABLE.
     """
@@ -33,11 +33,11 @@ def _resolve_complacency_state(value: int, size: int) -> LoreState:
 
 def _resolve_order_state(value: int, size: int) -> LoreState:
     """Resolve Order state per Rogue Trader Colony Rules.
-    
+
     Args:
         value: Current Order value.
         size: Current colony Size for threshold comparison.
-    
+
     Returns:
         ANARCHY if value == 0, ORDERLY if value > size, otherwise STABLE.
     """
@@ -50,11 +50,11 @@ def _resolve_order_state(value: int, size: int) -> LoreState:
 
 def _resolve_productivity_state(value: int, size: int) -> LoreState:
     """Resolve Productivity state per Rogue Trader Colony Rules.
-    
+
     Args:
         value: Current Productivity value.
         size: Current colony Size for threshold comparison.
-    
+
     Returns:
         PRODUCTIVE if value > size, HALTED if value == 0, otherwise STABLE.
     """
@@ -67,11 +67,11 @@ def _resolve_productivity_state(value: int, size: int) -> LoreState:
 
 def _resolve_piety_state(value: int, size: int) -> LoreState:
     """Resolve Piety state per Rogue Trader Colony Rules.
-    
+
     Args:
         value: Current Piety value.
         size: Current colony Size for threshold comparison.
-    
+
     Returns:
         PIOUS if value > size, HERETICAL if value == 0, otherwise STABLE.
     """
@@ -93,9 +93,10 @@ def resolve_lore_state(stat: ModifierStat, value: int, size: int) -> LoreState:
 
     Returns:
         The appropriate LoreState enum value.
-    
+
     Raises:
-        ValueError: If stat is not one of the four colony stats (Complacency, Order, Productivity, Piety).
+        ValueError: If stat is not one of the four colony stats
+            (Complacency, Order, Productivity, Piety).
     """
     resolvers = {
         ModifierStat.COMPLACENCY: _resolve_complacency_state,
@@ -103,9 +104,9 @@ def resolve_lore_state(stat: ModifierStat, value: int, size: int) -> LoreState:
         ModifierStat.PRODUCTIVITY: _resolve_productivity_state,
         ModifierStat.PIETY: _resolve_piety_state,
     }
-    
+
     resolver = resolvers.get(stat)
     if resolver is None:
         raise ValueError(f"Cannot resolve lore state for stat {stat}")
-    
+
     return resolver(value, size)

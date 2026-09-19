@@ -5,7 +5,11 @@ import pytest
 
 @pytest.fixture
 def colony(auth_client):
-    create_data = {"name": "Test Colony", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+    create_data = {
+        "name": "Test Colony",
+        "founder_name": "Owner",
+        "colony_type": "mining_and_industry",
+    }
     response = auth_client.post("/api/v1/colonies", json=create_data)
     return response.json()
 
@@ -19,7 +23,11 @@ class TestInfrastructureAPI:
         assert data["meta"]["total"] == 0
 
     def test_create_infrastructure(self, auth_client, colony):
-        create_data = {"name": "Main Power Grid", "infrastructure_type": "power_network", "state": "working"}
+        create_data = {
+            "name": "Main Power Grid",
+            "infrastructure_type": "power_network",
+            "state": "working",
+        }
         response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -32,13 +40,21 @@ class TestInfrastructureAPI:
         assert data["is_working"] is True
 
     def test_create_infrastructure_for_missing_colony_raises(self, auth_client):
-        create_data = {"name": "Power Grid", "infrastructure_type": "power_network", "state": "working"}
+        create_data = {
+            "name": "Power Grid",
+            "infrastructure_type": "power_network",
+            "state": "working",
+        }
         response = auth_client.post("/api/v1/colonies/9999/infrastructure", json=create_data)
         assert response.status_code == 404
         assert "Colony 9999 not found" in response.json()["detail"]
 
     def test_get_infrastructure(self, auth_client, colony):
-        create_data = {"name": "Power Network", "infrastructure_type": "power_network", "state": "working"}
+        create_data = {
+            "name": "Power Network",
+            "infrastructure_type": "power_network",
+            "state": "working",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -54,7 +70,11 @@ class TestInfrastructureAPI:
         assert "Infrastructure 9999 not found" in response.json()["detail"]
 
     def test_update_infrastructure_state(self, auth_client, colony):
-        create_data = {"name": "Transport Hub", "infrastructure_type": "power_network", "state": "planned"}
+        create_data = {
+            "name": "Transport Hub",
+            "infrastructure_type": "power_network",
+            "state": "planned",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -75,7 +95,11 @@ class TestInfrastructureAPI:
         assert response.status_code == 404
 
     def test_delete_infrastructure(self, auth_client, colony):
-        create_data = {"name": "Power Grid", "infrastructure_type": "power_network", "state": "working"}
+        create_data = {
+            "name": "Power Grid",
+            "infrastructure_type": "power_network",
+            "state": "working",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -99,7 +123,11 @@ class TestInfrastructureAPI:
         assert response.json()["has_effect"] is False
 
     def test_update_infrastructure_name(self, auth_client, colony):
-        create_data = {"name": "Old Name", "infrastructure_type": "power_network", "state": "planned"}
+        create_data = {
+            "name": "Old Name",
+            "infrastructure_type": "power_network",
+            "state": "planned",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -112,7 +140,12 @@ class TestInfrastructureAPI:
         assert response.json()["name"] == "New Name"
 
     def test_update_infrastructure_notes(self, auth_client, colony):
-        create_data = {"name": "Power Grid", "infrastructure_type": "power_network", "state": "planned", "notes": "Initial notes"}
+        create_data = {
+            "name": "Power Grid",
+            "infrastructure_type": "power_network",
+            "state": "planned",
+            "notes": "Initial notes",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
@@ -125,14 +158,19 @@ class TestInfrastructureAPI:
         assert response.json()["notes"] == "Updated notes"
 
     def test_validate_infrastructure_transition(self, auth_client, colony):
-        create_data = {"name": "Power Grid", "infrastructure_type": "power_network", "state": "planned"}
+        create_data = {
+            "name": "Power Grid",
+            "infrastructure_type": "power_network",
+            "state": "planned",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/infrastructure", json=create_data
         )
         infra_id = create_response.json()["id"]
         update_data = {"state": "working"}
         response = auth_client.patch(
-            f"/api/v1/colonies/{colony['id']}/infrastructure/{infra_id}?validate_only=true", json=update_data
+            f"/api/v1/colonies/{colony['id']}/infrastructure/{infra_id}?validate_only=true",
+            json=update_data,
         )
         assert response.status_code == 200
         data = response.json()

@@ -227,7 +227,7 @@ class TestLoginAttemptCleanup:
         now = datetime.now(UTC)
 
         # Create 3 old attempts (60 days ago)
-        for i in range(3):
+        for _i in range(3):
             repo.create(
                 LoginAttempt(
                     username="olduser",
@@ -238,7 +238,7 @@ class TestLoginAttemptCleanup:
             )
 
         # Create 2 recent attempts (5 days ago)
-        for i in range(2):
+        for _i in range(2):
             repo.create(
                 LoginAttempt(
                     username="newuser",

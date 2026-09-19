@@ -6,17 +6,17 @@ Create Date: 2026-08-21 09:40:43.305904
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op  # type: ignore[attr-defined]
 import sqlalchemy as sa
 
+from alembic import op  # type: ignore[attr-defined]
 
 # revision identifiers, used by Alembic.
 revision: str = "f6a9a7be18f0"
-down_revision: Union[str, Sequence[str], None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 # Foreign key reference constants
 COLONIES_ID_FK = ["colonies.id"]

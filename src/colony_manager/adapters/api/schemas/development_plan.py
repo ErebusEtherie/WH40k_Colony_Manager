@@ -1,13 +1,13 @@
 """Pydantic schemas for development plan API requests and responses."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class DevelopmentPlanStatusEnum(str, Enum):
+class DevelopmentPlanStatusEnum(StrEnum):
     """Enum for development plan status."""
 
     PLANNED = "planned"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 from typing import Any
 
@@ -31,12 +32,10 @@ class FileRuleConfigProvider(RuleConfigProvider):
             self.config_dir = Path(config_dir)
         # Handle read-only mounts gracefully - config dir may be mounted read-only
         # which is fine as long as it already exists with the required files
-        try:
-            self.config_dir.mkdir(parents=True, exist_ok=True)
-        except OSError:
+        with contextlib.suppress(OSError):
             # Config directory may be mounted read-only, which is acceptable
             # if it already exists and contains the required configuration files
-            pass
+            self.config_dir.mkdir(parents=True, exist_ok=True)
         self._colony_types = self._load_colony_types()
         self._personalities = self._load_personalities()
         self._rule_tables = self._load_rule_tables()

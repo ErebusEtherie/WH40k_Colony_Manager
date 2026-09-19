@@ -90,7 +90,7 @@ def get_support_upgrade_modifiers(
     for stat_effect in config.stat_effects:
         # Check for conditional bonuses
         final_value = stat_effect.value
-        
+
         if stat_effect.conditional_bonuses and colony_type:
             for conditional in stat_effect.conditional_bonuses:
                 if colony_type.value in conditional.colony_types:
@@ -108,7 +108,9 @@ def get_support_upgrade_modifiers(
                 modifier_category=ModifierCategory.PERMANENT,
                 modifier_stat=ModifierStat(stat_effect.stat),
                 modifier_value=final_value,
-                description=f"{upgrade.name} ({_get_conditional_description(stat_effect, colony_type)})",
+                description=(
+                    f"{upgrade.name} ({_get_conditional_description(stat_effect, colony_type)})"
+                ),
                 is_active=True,
                 source_entity_id=upgrade.id,
             )

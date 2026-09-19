@@ -24,7 +24,8 @@ class Modifier(BaseModel):
         modifier_description: Human-readable description of the modifier source.
         is_active: Whether the modifier is currently active (can be manually disabled).
         expires_at: Optional date when this modifier expires (None = permanent).
-        source_entity_id: Optional ID of the source entity (infrastructure or support upgrade instance).
+        source_entity_id: Optional ID of the source entity
+            (infrastructure or support upgrade instance).
     """
 
     id: int | None = None

@@ -40,7 +40,6 @@ from colony_manager.adapters.persistence.support_upgrade_repository_impl import 
     SqlAlchemySupportUpgradeRepository,
 )
 from colony_manager.adapters.persistence.user_repository_impl import SqlAlchemyUserRepository
-from colony_manager.config.settings import get_security_settings
 from colony_manager.application.services.auth_service import AuthService
 from colony_manager.application.services.colony_service import ColonyService
 from colony_manager.application.services.colony_user_service import ColonyUserService
@@ -48,6 +47,7 @@ from colony_manager.application.services.development_plan_service import Develop
 from colony_manager.application.services.event_service import EventService
 from colony_manager.application.services.representative_service import RepresentativeService
 from colony_manager.application.services.user_service import UserService
+from colony_manager.config.settings import get_security_settings
 from colony_manager.domain.ports.audit_log_repository import AuditLogRepository
 from colony_manager.domain.ports.colony_repository import ColonyRepository
 from colony_manager.domain.ports.colony_user_repository import ColonyUserRepository
@@ -69,7 +69,7 @@ DEFAULT_DB_PATH = DEFAULT_CONFIG_DIR.parent / "colony_manager.sqlite"
 
 def get_config_dir() -> Path:
     """Get the config directory path.
-    
+
     Checks CONFIG_DIR environment variable first, then falls back to default.
     """
     # Allow override via environment variable
@@ -80,7 +80,7 @@ def get_config_dir() -> Path:
 
 def get_db_path() -> Path:
     """Get the database file path.
-    
+
     Checks DATABASE_PATH environment variable first, then falls back to default.
     """
     # Allow override via environment variable
@@ -104,7 +104,8 @@ def get_rule_config_provider() -> RuleConfigProvider:
     """
     if _rule_config_provider is None:
         raise RuntimeError(
-            "Rule config provider not initialized. Call init_rule_config_provider() during application startup."
+            "Rule config provider not initialized. Call "
+            "init_rule_config_provider() during application startup."
         )
     return _rule_config_provider
 

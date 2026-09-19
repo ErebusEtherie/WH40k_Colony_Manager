@@ -9,6 +9,7 @@ Security Features:
 - Refresh token rotation
 """
 
+import contextlib
 import secrets
 from typing import Annotated
 
@@ -80,11 +81,7 @@ limiter = get_limiter()
         },
         400: {
             "description": "Invalid input (username/email exists, weak password)",
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Username already exists"}
-                }
-            },
+            "content": {"application/json": {"example": {"detail": "Username already exists"}}},
         },
     },
     tags=["authentication"],
@@ -169,7 +166,9 @@ def register(
     openapi_extra={"security": []},
     responses={
         200: {
-            "description": "Login successful. Tokens are set as HttpOnly cookies, never returned in the body.",
+            "description": (
+                "Login successful. Tokens are set as HttpOnly cookies, never returned in the body."
+            ),
             "content": {
                 "application/json": {
                     "example": {"message": "Login successful"},
@@ -212,7 +211,10 @@ def login(
         )
         raise HTTPException(
             status_code=status.HTTP_423_LOCKED,
-            detail="Account is temporarily locked due to too many failed login attempts. Please try again in 15 minutes.",
+            detail=(
+                "Account is temporarily locked due to too many failed login "
+                "attempts. Please try again in 15 minutes."
+            ),
         )
 
     user = user_repository.get_by_username(login_request.username)
@@ -308,16 +310,16 @@ def login(
 @router.get("/csrf-token", openapi_extra={"security": []})
 async def get_csrf_token(request: Request) -> JSONResponse:
     """Generate and return a CSRF token for the current session.
-    
+
     The CSRF token is stored in a non-HttpOnly cookie so JavaScript can read it
     and include it in the X-CSRF-Token header for state-changing requests.
-    
+
     This endpoint is public and does not require authentication.
     """
     csrf_token = secrets.token_urlsafe(32)
-    
+
     response = JSONResponse(content={"csrf_token": csrf_token})
-    
+
     # Set CSRF token in a non-HttpOnly cookie (JavaScript needs to read it)
     settings = get_security_settings()
     response.set_cookie(
@@ -329,11 +331,13 @@ async def get_csrf_token(request: Request) -> JSONResponse:
         samesite="strict",
         path="/",
     )
-    
+
     return response
 
 
-@router.post("/refresh", openapi_extra={"security": []}, responses={401: {"description": "Invalid token"}})
+@router.post(
+    "/refresh", openapi_extra={"security": []}, responses={401: {"description": "Invalid token"}}
+)
 @limiter.limit(refresh_token_rate_limit())
 def refresh_token_endpoint(
     request: Request,
@@ -358,16 +362,16 @@ def refresh_token_endpoint(
     """
     settings = get_security_settings()
     secret_key = get_jwt_secret_key()
-    
+
     # Get refresh token from cookie
     refresh_token = request.cookies.get(settings.cookie_refresh_token_name)
-    
+
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token not found. Please log in again.",
         )
-    
+
     try:
         payload = verify_token(refresh_token, secret_key, token_type="refresh")
         user_id = int(payload["sub"])
@@ -388,15 +392,15 @@ def refresh_token_endpoint(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid or expired refresh token: {e}",
         ) from e
-    
+
     user = user_repository.get_by_id(user_id)
-    
+
     if user is None or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found or deactivated",
         )
-    
+
     # Rotate: revoke the consumed refresh token so it can't be reused, then
     # issue a new pair with issuance tracking (same as /login).
     auth_service.revoke_refresh_token(refresh_token, secret_key, reason="rotation")
@@ -406,11 +410,11 @@ def refresh_token_endpoint(
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent"),
     )
-    
+
     # Rotated tokens are delivered exclusively as HttpOnly cookies; never echo
     # them in the response body (same reasoning as on /login).
     response = JSONResponse(content={"message": "Token refreshed successfully"})
-    
+
     # Set httpOnly cookies for secure token storage (token rotation)
     response.set_cookie(
         key=settings.cookie_access_token_name,
@@ -430,7 +434,7 @@ def refresh_token_endpoint(
         samesite=settings.cookie_samesite,  # type: ignore[arg-type]
         path="/",
     )
-    
+
     return response
 
 
@@ -477,7 +481,9 @@ def change_password(
     return {"message": "Password changed successfully"}
 
 
-@router.post("/revoke", response_model=TokenRevokeResponse, responses={400: {"description": "Invalid token"}})
+@router.post(
+    "/revoke", response_model=TokenRevokeResponse, responses={400: {"description": "Invalid token"}}
+)
 @limiter.limit(refresh_token_rate_limit())
 def revoke_token(
     request: Request,
@@ -497,17 +503,19 @@ def revoke_token(
     # Get token from cookie (cookie-based auth for frontend)
     settings = get_security_settings()
     access_token = request.cookies.get(settings.cookie_access_token_name)
-    
+
     if not access_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Access token cookie not found",
         )
-    
+
     secret_key = get_jwt_secret_key()
 
     try:
-        auth_service.revoke_token(access_token, secret_key, reason=revoke_request.reason or "logout")
+        auth_service.revoke_token(
+            access_token, secret_key, reason=revoke_request.reason or "logout"
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -520,17 +528,13 @@ def revoke_token(
     # access-token revocation above is the authoritative logout step.
     refresh_token = request.cookies.get(settings.cookie_refresh_token_name)
     if refresh_token:
-        try:
+        with contextlib.suppress(ValueError):
             auth_service.revoke_refresh_token(
                 refresh_token, secret_key, reason=revoke_request.reason or "logout"
             )
-        except ValueError:
-            pass
 
     # Create response
-    response = JSONResponse(
-        content={"message": "Token revoked successfully", "tokens_revoked": 1}
-    )
+    response = JSONResponse(content={"message": "Token revoked successfully", "tokens_revoked": 1})
 
     # Clear httpOnly cookies on logout
     settings = get_security_settings()
@@ -546,7 +550,10 @@ def revoke_token(
     return response
 
 
-@router.post("/revoke-all", responses={403: {"description": "Forbidden"}, 404: {"description": "User not found"}})
+@router.post(
+    "/revoke-all",
+    responses={403: {"description": "Forbidden"}, 404: {"description": "User not found"}},
+)
 def revoke_all_tokens(
     revoke_request: TokenRevokeAllRequest,
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],

@@ -81,28 +81,28 @@ class ColonyUpdate(BaseModel):
 
 class ColonyAgeAdvance(BaseModel):
     """Schema for advancing colony age.
-    
+
     Supports three operations:
     - 'add': Add days to current age (positive or negative)
     - 'set': Set age to specific value
     - 'subtract': Subtract days from current age
-    
+
     Use 'add' for both increasing and decreasing age.
     """
 
     add: int | None = Field(None, description="Days to add (can be negative to decrease)")
     set: int | None = Field(None, ge=0, description="Set age to specific value")
     subtract: int | None = Field(None, ge=0, description="Days to subtract from current age")
-    
+
     def get_days_delta(self, current_age: int) -> int:
         """Calculate the new age based on the operation.
-        
+
         Args:
             current_age: Current colony age in days
-            
+
         Returns:
             New age in days
-            
+
         Raises:
             ValueError: If no valid operation is provided or result would be negative
         """
@@ -114,10 +114,10 @@ class ColonyAgeAdvance(BaseModel):
             new_age = current_age - self.subtract
         else:
             raise ValueError("One of 'add', 'set', or 'subtract' must be provided")
-        
+
         if new_age < 0:
             raise ValueError(f"Age cannot be negative. Result would be {new_age} days.")
-        
+
         return new_age
 
 

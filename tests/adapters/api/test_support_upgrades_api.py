@@ -5,7 +5,11 @@ import pytest
 
 @pytest.fixture
 def colony(auth_client):
-    create_data = {"name": "Test Colony", "founder_name": "Owner", "colony_type": "mining_and_industry"}
+    create_data = {
+        "name": "Test Colony",
+        "founder_name": "Owner",
+        "colony_type": "mining_and_industry",
+    }
     response = auth_client.post("/api/v1/colonies", json=create_data)
     return response.json()
 
@@ -34,19 +38,31 @@ class TestSupportUpgradesAPI:
         assert "Colony 9999 not found" in response.json()["detail"]
 
     def test_create_upgrade_with_custom_stat_choice(self, auth_client, colony):
-        create_data = {"name": "Cultural Center", "upgrade_type": "cultural_improvement", "custom_stat_choice": "order"}
+        create_data = {
+            "name": "Cultural Center",
+            "upgrade_type": "cultural_improvement",
+            "custom_stat_choice": "order",
+        }
         response = auth_client.post(f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data)
         assert response.status_code == 201
         assert response.json()["custom_stat_choice"] == "order"
 
     def test_create_upgrade_with_custom_product(self, auth_client, colony):
-        create_data = {"name": "Vehicle Factory", "upgrade_type": "industrial_facility", "custom_product": "Vehicles"}
+        create_data = {
+            "name": "Vehicle Factory",
+            "upgrade_type": "industrial_facility",
+            "custom_product": "Vehicles",
+        }
         response = auth_client.post(f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data)
         assert response.status_code == 201
         assert response.json()["custom_product"] == "Vehicles"
 
     def test_create_upgrade_with_affiliated_group(self, auth_client, colony):
-        create_data = {"name": "Guild Contacts", "upgrade_type": "contacts", "affiliated_group": "Merchant Guild"}
+        create_data = {
+            "name": "Guild Contacts",
+            "upgrade_type": "contacts",
+            "affiliated_group": "Merchant Guild",
+        }
         response = auth_client.post(f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data)
         assert response.status_code == 201
         assert response.json()["affiliated_group"] == "Merchant Guild"
@@ -68,7 +84,11 @@ class TestSupportUpgradesAPI:
         assert "SupportUpgrade 9999 not found" in response.json()["detail"]
 
     def test_update_upgrade(self, auth_client, colony):
-        create_data = {"name": "Cultural Center", "upgrade_type": "cultural_improvement", "custom_stat_choice": "order"}
+        create_data = {
+            "name": "Cultural Center",
+            "upgrade_type": "cultural_improvement",
+            "custom_stat_choice": "order",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data
         )
@@ -116,7 +136,11 @@ class TestSupportUpgradesAPI:
         assert response.json()["name"] == "New Name"
 
     def test_update_upgrade_notes(self, auth_client, colony):
-        create_data = {"name": "Arbites HQ", "upgrade_type": "arbites_precinct", "notes": "Initial notes"}
+        create_data = {
+            "name": "Arbites HQ",
+            "upgrade_type": "arbites_precinct",
+            "notes": "Initial notes",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data
         )
@@ -129,14 +153,19 @@ class TestSupportUpgradesAPI:
         assert response.json()["notes"] == "Updated notes"
 
     def test_validate_upgrade_transition(self, auth_client, colony):
-        create_data = {"name": "Cultural Center", "upgrade_type": "cultural_improvement", "custom_stat_choice": "order"}
+        create_data = {
+            "name": "Cultural Center",
+            "upgrade_type": "cultural_improvement",
+            "custom_stat_choice": "order",
+        }
         create_response = auth_client.post(
             f"/api/v1/colonies/{colony['id']}/upgrades", json=create_data
         )
         upgrade_id = create_response.json()["id"]
         update_data = {"custom_stat_choice": "piety"}
         response = auth_client.patch(
-            f"/api/v1/colonies/{colony['id']}/upgrades/{upgrade_id}?validate_only=true", json=update_data
+            f"/api/v1/colonies/{colony['id']}/upgrades/{upgrade_id}?validate_only=true",
+            json=update_data,
         )
         assert response.status_code == 200
         data = response.json()

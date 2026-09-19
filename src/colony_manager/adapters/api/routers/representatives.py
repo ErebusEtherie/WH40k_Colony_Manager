@@ -158,7 +158,9 @@ async def list_representatives(
     ]
 
 
-@router.post("", response_model=RepresentativeResponse, status_code=status.HTTP_201_CREATED, responses={})
+@router.post(
+    "", response_model=RepresentativeResponse, status_code=status.HTTP_201_CREATED, responses={}
+)
 async def create_representative(
     rep_data: RepresentativeCreate,
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],
@@ -188,7 +190,11 @@ async def create_representative(
     )
 
 
-@router.get("/{rep_id}", response_model=RepresentativeResponse, responses={404: {"description": "Representative not found"}})
+@router.get(
+    "/{rep_id}",
+    response_model=RepresentativeResponse,
+    responses={404: {"description": "Representative not found"}},
+)
 async def get_representative(
     rep_id: int,
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],
@@ -209,7 +215,11 @@ async def get_representative(
     )
 
 
-@router.put("/{rep_id}", response_model=RepresentativeResponse, responses={404: {"description": "Representative not found"}})
+@router.put(
+    "/{rep_id}",
+    response_model=RepresentativeResponse,
+    responses={404: {"description": "Representative not found"}},
+)
 async def update_representative(
     rep_id: int,
     rep_data: RepresentativeUpdate,
@@ -236,7 +246,11 @@ async def update_representative(
     )
 
 
-@router.delete("/{rep_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Representative not found"}})
+@router.delete(
+    "/{rep_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Representative not found"}},
+)
 async def delete_representative(
     rep_id: int,
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],
@@ -247,7 +261,14 @@ async def delete_representative(
     service._representative_repository.delete(rep_id)
 
 
-@router.post("/{rep_id}/assign", response_model=RepresentativeResponse, responses={404: {"description": "Representative or colony not found"}, 400: {"description": "Invalid request or assignment conflict"}})
+@router.post(
+    "/{rep_id}/assign",
+    response_model=RepresentativeResponse,
+    responses={
+        404: {"description": "Representative or colony not found"},
+        400: {"description": "Invalid request or assignment conflict"},
+    },
+)
 async def assign_to_colony(
     rep_id: int,
     colony_id: int,
@@ -285,7 +306,16 @@ async def assign_to_colony(
     )
 
 
-@router.post("/{rep_id}/unassign", response_model=RepresentativeResponse, responses={404: {"description": "Representative not found or not assigned"}, 400: {"description": "Invalid request"}, 403: {"description": "Forbidden - User not a member of colony"}, 500: {"description": "Internal server error - Authenticated user has no ID"}})
+@router.post(
+    "/{rep_id}/unassign",
+    response_model=RepresentativeResponse,
+    responses={
+        404: {"description": "Representative not found or not assigned"},
+        400: {"description": "Invalid request"},
+        403: {"description": "Forbidden - User not a member of colony"},
+        500: {"description": "Internal server error - Authenticated user has no ID"},
+    },
+)
 async def unassign_from_colony(
     rep_id: int,
     current_user: Annotated[User, Depends(get_current_user_from_cookie)],

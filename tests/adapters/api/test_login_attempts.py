@@ -50,7 +50,7 @@ class TestLoginAttemptTracking:
         assert response.status_code == 201
 
         # Make 5 failed login attempts
-        for i in range(5):
+        for _i in range(5):
             login_data = {
                 "username": "lockouttestuser",
                 "password": "wrongpassword",
@@ -79,7 +79,7 @@ class TestLoginAttemptTracking:
         assert response.status_code == 201
 
         # Make 5 failed login attempts
-        for i in range(5):
+        for _i in range(5):
             login_data = {
                 "username": "lockedcorrectuser",
                 "password": "wrongpassword",

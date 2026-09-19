@@ -65,7 +65,11 @@ class TestCsrfExemptions:
         """Login (and register) run before a session exists, so no CSRF."""
         resp = client.post(
             "/api/v1/auth/register",
-            json={"username": "exemptuser", "email": "exempt@example.com", "password": "SecurePass123!"},
+            json={
+                "username": "exemptuser",
+                "email": "exempt@example.com",
+                "password": "SecurePass123!",
+            },
         )
         assert resp.status_code == 201
         resp = client.post(

@@ -252,7 +252,8 @@ class DevelopmentPlanService:
 
         if self._infrastructure_repository is None or self._support_upgrade_repository is None:
             raise ValidationError(
-                "Infrastructure and Support Upgrade repositories must be configured to install plans"
+                "Infrastructure and Support Upgrade repositories must be "
+                "configured to install plans"
             )
 
         # Verify plan is in DELIVERED status

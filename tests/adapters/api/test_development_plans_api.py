@@ -91,7 +91,11 @@ class TestDevelopmentPlansAPI:
         """Test updating a development plan."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Update Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Update Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 
@@ -122,7 +126,11 @@ class TestDevelopmentPlansAPI:
         """Test deleting a development plan."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Delete Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Delete Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 
@@ -152,7 +160,7 @@ class TestDevelopmentPlansAPI:
 
     def test_create_development_plan_unauthorized(self, test_client: TestClient):
         """Test creating development plan without authentication fails.
-        
+
         Note: Returns 403 (CSRF failure) rather than 401 because CSRF
         middleware runs before auth middleware for POST requests.
         """
@@ -171,7 +179,11 @@ class TestDevelopmentPlansAPI:
         """Test all valid development plan status values."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Status Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Status Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 

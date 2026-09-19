@@ -26,7 +26,7 @@ _CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "upgrade_limits.
 
 def _load_upgrade_limits() -> dict[str, Any]:
     """Load upgrade limits from config file."""
-    with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
         return json.load(f)  # type: ignore[no-any-return]
 
 

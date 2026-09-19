@@ -9,11 +9,16 @@ class InfrastructureCreate(BaseModel):
     """Schema for creating new infrastructure."""
 
     name: str = Field(
-        ..., min_length=1, max_length=255, description="User-defined name for this infrastructure instance"
+        ...,
+        min_length=1,
+        max_length=255,
+        description="User-defined name for this infrastructure instance",
     )
     infrastructure_type: InfrastructureType
     state: InfrastructureState = InfrastructureState.PLANNED
-    notes: str = Field(default="", max_length=1000, description="Optional notes about this infrastructure")
+    notes: str = Field(
+        default="", max_length=1000, description="Optional notes about this infrastructure"
+    )
 
 
 class InfrastructureUpdate(BaseModel):

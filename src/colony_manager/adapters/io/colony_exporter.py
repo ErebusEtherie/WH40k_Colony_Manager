@@ -47,7 +47,6 @@ class ColonyExporter:
         enriched_colony_users = colony_users
         if colony_users and user_service:
             from colony_manager.adapters.io.mappers import domain_to_save_colony_user
-            from colony_manager.adapters.io.save_file_schema import SaveColonyUser
 
             enriched_colony_users = []
             for cu in colony_users:

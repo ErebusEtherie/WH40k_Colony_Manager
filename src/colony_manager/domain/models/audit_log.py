@@ -5,12 +5,12 @@ auto-populated via the service layer - not manually created.
 """
 
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class AuditLogAction(str, Enum):
+class AuditLogAction(StrEnum):
     """Action enumeration for audit log entries."""
 
     CREATE = "create"

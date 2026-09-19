@@ -63,7 +63,7 @@ class TestResourceService:
                 name="Test",
                 abundance=50,
             )
-            assert False, "Should have raised NotFoundError"
+            raise AssertionError("Should have raised NotFoundError")
         except NotFoundError:
             pass
 
@@ -163,6 +163,6 @@ class TestResourceService:
 
         try:
             self.service.get_resource(resource.id)
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError:
             pass

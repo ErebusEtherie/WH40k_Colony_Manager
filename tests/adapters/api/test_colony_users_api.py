@@ -164,7 +164,7 @@ class TestColonyUsersAPI:
             },
         )
         colony_id = colony_response.json()["id"]
-        
+
         # Create user
         user_data = {
             "username": "happypath_user",
@@ -173,11 +173,11 @@ class TestColonyUsersAPI:
         }
         user_response = auth_client.post("/api/v1/auth/register", json=user_data)
         user_id = user_response.json()["id"]
-        
+
         # Add user to colony
         member_data = {"user_id": user_id, "role": "viewer"}
         response = auth_client.post(f"/api/v1/colonies/{colony_id}/members", json=member_data)
-        
+
         # Assert success
         assert response.status_code == 201
         member = response.json()
@@ -186,7 +186,7 @@ class TestColonyUsersAPI:
         assert member["role"] == "viewer"
         assert "id" in member
         assert "joined_at" in member
-        
+
         # Verify membership can be retrieved
         get_response = auth_client.get(f"/api/v1/colonies/{colony_id}/members/{user_id}")
         assert get_response.status_code == 200
@@ -196,7 +196,11 @@ class TestColonyUsersAPI:
         """Test 404 when getting a member that doesn't exist."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Not Found Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Not Found Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 
@@ -207,7 +211,11 @@ class TestColonyUsersAPI:
         """Test adding a user who is already a member fails."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Duplicate Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Duplicate Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 
@@ -229,7 +237,11 @@ class TestColonyUsersAPI:
         """Test all valid colony member roles."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Roles Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Roles Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
 
@@ -291,7 +303,7 @@ class TestColonyUsersAPI:
             },
         )
         colony_id = colony_response.json()["id"]
-        
+
         # Create new owner user
         new_owner_data = {
             "username": "new_owner",
@@ -300,27 +312,27 @@ class TestColonyUsersAPI:
         }
         new_owner_response = auth_client.post("/api/v1/auth/register", json=new_owner_data)
         new_owner_id = new_owner_response.json()["id"]
-        
+
         # Add new owner as member first
         auth_client.post(
             f"/api/v1/colonies/{colony_id}/members",
             json={"user_id": new_owner_id, "role": "editor"},
         )
-        
+
         # Transfer ownership
         transfer_data = {"new_owner_id": new_owner_id, "demote_current": True}
         response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/members/transfer-ownership",
             json=transfer_data,
         )
-        
+
         # Assert success
         assert response.status_code == 200
         result = response.json()
         assert result["colony_id"] == colony_id
         assert result["new_owner_id"] == new_owner_id
         assert result["previous_owner_demoted"] is True
-        
+
         # Verify new owner has OWNER role
         get_response = auth_client.get(f"/api/v1/colonies/{colony_id}/members/{new_owner_id}")
         assert get_response.status_code == 200
@@ -338,14 +350,14 @@ class TestColonyUsersAPI:
             },
         )
         colony_id = colony_response.json()["id"]
-        
+
         # Try to transfer to non-existent user
         transfer_data = {"new_owner_id": 99999, "demote_current": True}
         response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/members/transfer-ownership",
             json=transfer_data,
         )
-        
+
         # Assert 404
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
@@ -362,18 +374,18 @@ class TestColonyUsersAPI:
             },
         )
         colony_id = colony_response.json()["id"]
-        
+
         # Get current user info from a member endpoint
         members_response = auth_client.get(f"/api/v1/colonies/{colony_id}/members")
         current_user_id = members_response.json()["items"][0]["user_id"]
-        
+
         # Try to transfer to self
         transfer_data = {"new_owner_id": current_user_id, "demote_current": True}
         response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/members/transfer-ownership",
             json=transfer_data,
         )
-        
+
         # Assert 400
         assert response.status_code == 400
         assert "same user" in response.json()["detail"].lower()
@@ -390,7 +402,7 @@ class TestColonyUsersAPI:
             },
         )
         colony_id = colony_response.json()["id"]
-        
+
         # Create new owner user
         new_owner_data = {
             "username": "new_owner_no_demote",
@@ -399,24 +411,24 @@ class TestColonyUsersAPI:
         }
         new_owner_response = auth_client.post("/api/v1/auth/register", json=new_owner_data)
         new_owner_id = new_owner_response.json()["id"]
-        
+
         # Add new owner as member first
         auth_client.post(
             f"/api/v1/colonies/{colony_id}/members",
             json={"user_id": new_owner_id, "role": "editor"},
         )
-        
+
         # Transfer ownership without demotion
         transfer_data = {"new_owner_id": new_owner_id, "demote_current": False}
         response = auth_client.post(
             f"/api/v1/colonies/{colony_id}/members/transfer-ownership",
             json=transfer_data,
         )
-        
+
         # Assert success
         assert response.status_code == 200
         assert response.json()["previous_owner_demoted"] is False
-        
+
         # Verify current owner still has OWNER role (now both are owners)
         members_response = auth_client.get(f"/api/v1/colonies/{colony_id}/members")
         members = members_response.json()["items"]
@@ -431,7 +443,11 @@ class TestColonyUsersPagination:
         """Test colony users pagination with offset, limit, has_more, total."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Pagination Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Pagination Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 24 users and add them to the colony (owner already exists, total=25)
@@ -443,7 +459,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members")
         data = response.json()
         assert len(data["items"]) == 20, f"Expected 20 items, got {len(data['items'])}"
@@ -456,7 +474,11 @@ class TestColonyUsersPagination:
         """Test pagination boundary conditions."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Edge Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Edge Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 9 users (owner already exists, total=10)
@@ -468,7 +490,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         # Test exact page size
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members?limit=10")
         data = response.json()
@@ -489,7 +513,11 @@ class TestColonyUsersPagination:
         """Test listing members for colony with no members (except owner)."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Empty Members", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Empty Members",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members")
@@ -502,7 +530,11 @@ class TestColonyUsersPagination:
         """Test pagination with different offset values."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Offset Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Offset Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 14 users (owner already exists, total=15)
@@ -514,7 +546,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         # Test offset=5
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members?offset=5&limit=5")
         data = response.json()
@@ -532,7 +566,11 @@ class TestColonyUsersPagination:
         """Test pagination with different limit values."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Limit Test", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Limit Test",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 29 users (owner already exists, total=30)
@@ -544,7 +582,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         # Test limit=5
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members?limit=5")
         data = response.json()
@@ -562,7 +602,11 @@ class TestColonyUsersPagination:
         """Test that total_pages is calculated correctly."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Total Pages", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Total Pages",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 24 users (owner already exists, total=25)
@@ -574,7 +618,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members?limit=10")
         data = response.json()
         assert data["meta"]["total"] == 25
@@ -585,7 +631,11 @@ class TestColonyUsersPagination:
         """Test pagination on the last page."""
         colony_response = auth_client.post(
             "/api/v1/colonies",
-            json={"name": "Last Page", "founder_name": "Owner", "colony_type": "mining_and_industry"},
+            json={
+                "name": "Last Page",
+                "founder_name": "Owner",
+                "colony_type": "mining_and_industry",
+            },
         )
         colony_id = colony_response.json()["id"]
         # Create 21 users (owner already exists, total=22)
@@ -597,7 +647,9 @@ class TestColonyUsersPagination:
             }
             user_response = auth_client.post("/api/v1/auth/register", json=user_data)
             user_id = user_response.json()["id"]
-            auth_client.post(f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"})
+            auth_client.post(
+                f"/api/v1/colonies/{colony_id}/members", json={"user_id": user_id, "role": "viewer"}
+            )
         # Get last page (offset=20, limit=10)
         response = auth_client.get(f"/api/v1/colonies/{colony_id}/members?offset=20&limit=10")
         data = response.json()

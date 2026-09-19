@@ -1,12 +1,12 @@
 """Domain model for user authentication."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     """User role enumeration for authorization.
 
     System roles form a global hierarchy (``viewer`` < ``colony_manager`` <

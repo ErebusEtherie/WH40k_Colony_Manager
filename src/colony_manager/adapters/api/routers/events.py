@@ -28,7 +28,10 @@ ERR_USER_NO_ID = "Authenticated user has no ID"
 
 
 @router.post(
-    "/colonies/{colony_id}", response_model=EventResponse, status_code=status.HTTP_201_CREATED, responses={404: {"description": "Colony not found"}}
+    "/colonies/{colony_id}",
+    response_model=EventResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={404: {"description": "Colony not found"}},
 )
 def create_event(
     colony_id: int,
@@ -79,7 +82,9 @@ def create_event(
     )
 
 
-@router.get("/{event_id}", response_model=EventResponse, responses={404: {"description": "Event not found"}})
+@router.get(
+    "/{event_id}", response_model=EventResponse, responses={404: {"description": "Event not found"}}
+)
 def get_event(
     event_id: int,
     service: Annotated[EventService, Depends(dependencies.get_event_service)],
@@ -125,7 +130,14 @@ def get_event(
     )
 
 
-@router.get("/colonies/{colony_id}", response_model=PaginatedResponse[EventListItem], responses={403: {"description": "Forbidden - User not a member of colony"}, 404: {"description": "Colony not found"}})
+@router.get(
+    "/colonies/{colony_id}",
+    response_model=PaginatedResponse[EventListItem],
+    responses={
+        403: {"description": "Forbidden - User not a member of colony"},
+        404: {"description": "Colony not found"},
+    },
+)
 def get_events_by_colony(
     colony_id: int,
     service: Annotated[EventService, Depends(dependencies.get_event_service)],
@@ -146,11 +158,11 @@ def get_events_by_colony(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of items to return"),
 ) -> PaginatedResponse[EventListItem]:
     """List all events for a colony with pagination and filtering.
-    
+
     Filters:
     - active_only: If True, only return active events
     - search: Search by name (case-insensitive substring match)
-    
+
     Note: Filters are applied in-memory after loading all items. This is acceptable
     for typical colony sizes (<100 items). For colonies with >1000 events,
     consider adding filtered query methods to the repository layer.
@@ -163,24 +175,24 @@ def get_events_by_colony(
     membership = colony_user_repo.get_by_colony_and_user(colony_id, current_user.id)
     if membership is None and current_user.role.value != "admin":
         raise HTTPException(status_code=403, detail=f"User is not a member of colony {colony_id}")
-    
+
     events = service.get_events_by_colony(colony_id, active_only)
-    
+
     # Apply filters
     filtered = events
-    
+
     # Normalize empty string to None for name_search
     if name_search is not None and not name_search.strip():
         name_search = None
-    
+
     if name_search is not None:
         search_lower = name_search.lower()
         filtered = [e for e in filtered if search_lower in e.name.lower()]
-    
+
     # Calculate pagination
     total = len(filtered)
     items = filtered[offset : offset + limit]
-    
+
     # Build paginated response
     result: list[EventListItem] = []
     for e in items:
@@ -196,7 +208,7 @@ def get_events_by_colony(
                 modifier_count=len(e.modifiers),
             )
         )
-    
+
     return PaginatedResponse(
         items=result,
         meta=PaginationMeta(
@@ -208,7 +220,9 @@ def get_events_by_colony(
     )
 
 
-@router.patch("/{event_id}", response_model=EventResponse, responses={404: {"description": "Event not found"}})
+@router.patch(
+    "/{event_id}", response_model=EventResponse, responses={404: {"description": "Event not found"}}
+)
 def update_event(
     event_id: int,
     event_data: EventUpdate,
@@ -255,7 +269,11 @@ def update_event(
     )
 
 
-@router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Event not found"}})
+@router.delete(
+    "/{event_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Event not found"}},
+)
 def delete_event(
     event_id: int,
     service: Annotated[EventService, Depends(dependencies.get_event_service)],

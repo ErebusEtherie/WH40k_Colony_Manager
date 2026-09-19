@@ -261,20 +261,20 @@ class RepresentativeService:
             raise NotFoundError(f"Representative {representative_id} not found")
 
         old_colony_id = representative.assigned_to_colony_id
-        
+
         # Get previous leadership modifier for change tracking
         previous_leadership = self._get_leadership_modifier(representative.stats)
         previous_representative_id = representative_id
         new_leadership = 0
         leadership_modifier_changed = previous_leadership != new_leadership
-        
+
         # Update colony if this rep was assigned
         if representative.assigned_to_colony_id is not None:
             colony = self._colony_repository.get(representative.assigned_to_colony_id)
             if colony is not None:
                 colony.representative_id = None
                 self._colony_repository.update(colony)
-        
+
         representative.assigned_to_colony_id = None
         result = self._representative_repository.update(representative)
 

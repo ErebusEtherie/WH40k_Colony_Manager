@@ -5,12 +5,12 @@ with role-based access control for collaborative colony management.
 """
 
 from datetime import datetime, timedelta, timezone
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class ColonyUserRole(str, Enum):
+class ColonyUserRole(StrEnum):
     """Role enumeration for colony membership.
 
     Roles determine what actions a user can perform within a colony context.

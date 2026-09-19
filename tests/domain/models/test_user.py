@@ -158,4 +158,3 @@ class TestUserRoleHierarchy:
     def test_viewer_meets_viewer(self):
         """A viewer satisfies a viewer requirement."""
         assert UserRole.VIEWER.meets_or_exceeds(UserRole.VIEWER)
-

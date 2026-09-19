@@ -66,7 +66,9 @@ class RepresentativeCreate(BaseModel):
     type: RepresentativeType
     personalities: list[PersonalityCreate] = Field(
         default_factory=list,
-        description="List of 1-4 personalities. Count limit depends on 'Quite a Character' position."
+        description=(
+            "List of 1-4 personalities. Count limit depends on 'Quite a Character' position."
+        ),
     )
     stats: RepresentativeStatsCreate
     skills: list[Skill] = Field(default_factory=list)
@@ -82,7 +84,7 @@ class RepresentativeCreate(BaseModel):
             )
 
         count = len(self.personalities)
-        
+
         # Check for Quite a Character position by name
         # (Both PersonalityCreate and Personality use 'quite_a_character' as the name)
         quite_a_character_index = None
@@ -113,7 +115,8 @@ class RepresentativeCreate(BaseModel):
             else:
                 raise ValueError(
                     f"Cannot have {count} personalities. "
-                    f"Maximum is 2 personalities without 'Quite a Character' in first or second position."
+                    f"Maximum is 2 personalities without 'Quite a Character' "
+                    f"in first or second position."
                 )
 
         return self
@@ -153,7 +156,10 @@ class RepresentativeResponse(BaseModel):
     assigned_to_colony_id: int | None
     assignment_change: "AssignmentChangeInfo | None" = Field(
         default=None,
-        description="Change tracking information for assignment/unassign operations (None for other endpoints)",
+        description=(
+            "Change tracking information for assignment/unassign "
+            "operations (None for other endpoints)"
+        ),
     )
 
 
@@ -167,11 +173,16 @@ class AssignmentChangeInfo(BaseModel):
 
     representative_changed: bool = Field(
         default=True,
-        description="Whether the representative assignment changed (always true for assign/unassign operations)",
+        description=(
+            "Whether the representative assignment changed "
+            "(always true for assign/unassign operations)"
+        ),
     )
     previous_representative_id: int | None = Field(
         default=None,
-        description="ID of the previously assigned representative (None if no previous representative)",
+        description=(
+            "ID of the previously assigned representative (None if no previous representative)"
+        ),
     )
     new_representative_id: int | None = Field(
         default=None,

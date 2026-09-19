@@ -213,7 +213,9 @@ class TestCascadingEffects:
     def test_anarchy_and_piety_zero_stack_locks(
         self, roll_order_c: int, roll_complacency_p: int, roll_comp_a: int, roll_prod_a: int
     ):
-        """When Order = 0 AND Piety = 0, both lock sets apply (Order locked twice, Complacency locked)."""
+        """When Order = 0 AND Piety = 0, both lock sets apply
+        (Order locked twice, Complacency locked).
+        """
         colony = Colony(
             name="Test",
             founder_name="Test Founder",
@@ -246,7 +248,9 @@ class TestCascadingEffects:
     def test_complacency_zero_and_piety_zero_stack_locks(
         self, roll_order_c: int, roll_prod_c: int, roll_order_p: int, roll_complacency_p: int
     ):
-        """When Complacency = 0 AND Piety = 0, all three stats (Order, Complacency, Productivity) get locked."""
+        """When Complacency = 0 AND Piety = 0, all three stats
+        (Order, Complacency, Productivity) get locked.
+        """
         colony = Colony(
             name="Test",
             founder_name="Test Founder",
