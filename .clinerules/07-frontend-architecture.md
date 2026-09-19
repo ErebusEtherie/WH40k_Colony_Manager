@@ -54,10 +54,11 @@ generated, so FE↔BE drift from hand-maintained interfaces is eliminated.
   src/types/api.d.ts`. Run it manually or in CI when the backend schema
   changes — not on every dev save; a live schema URL can substitute for the
   static `openapi.json` path.
-- The generated `src/types/api.d.ts` is a checked-in file, but is **not yet
-  generated** in this repo at present — confirm it exists before relying on
-  it (e.g. before wiring MSW handlers to the generated types per
-  `08-frontend-testing.md`).
+- The generated `src/types/api.d.ts` is a checked-in file produced by the
+  `generate:types` script above. Regenerate and commit it when the backend
+  schema changes, not on every dev save — and check the generated output
+  once before wiring MSW handlers to it (see the near-duplicate warning
+  below and `08-frontend-testing.md`).
 - `api/` hooks (TanStack Query) import from the generated types for request
   and response shapes. Do not hand-write a parallel interface for a
   request/response body that already has a generated type.
@@ -75,7 +76,8 @@ generated, so FE↔BE drift from hand-maintained interfaces is eliminated.
   full module path, which can surface as multiple long, near-identical
   generated type names for what's conceptually one resource (this project
   currently has two distinct `UserResponse` schemas — one from the auth
-  module, one from the user module — with the same shape). If the
+  module (`/auth/me`, no `created_at`/`updated_at`) and one from the user
+  module (adds `created_at`/`updated_at`) — near-identical otherwise). If the
   generated types file has near-duplicate types like this, raise it with
   whoever owns the backend schema (consolidate to one model) rather than
   picking one of the duplicates silently and hand-waving the other, since
