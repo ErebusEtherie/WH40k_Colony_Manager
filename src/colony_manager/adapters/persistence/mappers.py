@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta, timezone
 
 from colony_manager.adapters.persistence.orm_models import (
     AuditLogORM,
@@ -291,8 +291,6 @@ def domain_to_orm_user(domain: User) -> UserORM:
     Returns:
         The corresponding SQLAlchemy ORM model instance.
     """
-    from datetime import date
-
     return UserORM(
         id=domain.id,
         username=domain.username,
@@ -331,8 +329,6 @@ def orm_to_domain_event(orm: EventORM) -> Event:
 
 def domain_to_orm_event(domain: Event) -> EventORM:
     """Convert an Event domain model to an EventORM."""
-    from datetime import date
-
     orm = EventORM(
         id=domain.id,
         colony_id=domain.colony_id,
@@ -431,8 +427,6 @@ def orm_to_domain_audit_log(orm: AuditLogORM) -> AuditLog:
 
 def domain_to_orm_audit_log(domain: AuditLog) -> AuditLogORM:
     """Convert an AuditLog domain model to an AuditLogORM."""
-    from datetime import date
-
     return AuditLogORM(
         id=domain.id,
         entity_type=domain.entity_type,
@@ -471,8 +465,6 @@ def orm_to_domain_colony_user(orm: ColonyUserORM) -> ColonyUser:
 
 def domain_to_orm_colony_user(domain: ColonyUser) -> ColonyUserORM:
     """Convert a ColonyUser domain model to a ColonyUserORM."""
-    from datetime import date
-
     return ColonyUserORM(
         id=domain.id,
         colony_id=domain.colony_id,
