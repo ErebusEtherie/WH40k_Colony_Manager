@@ -10,10 +10,14 @@
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
     "typecheck": "tsc --noEmit",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "lint": "oxlint",
     "lint:md": "markdownlint-cli2 \"**/*.{md,markdown}\" \".clineignore\" \"#node_modules/**\" \"#.venv/**\" \"#dist/**\" \"#.git/**\" \"#docs/archive/**\" \"#docs/api/**\" \"#Gemini_UI/**\" \"#config_archive/**\"",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install chromium",
     "generate:types": "openapi-typescript docs/api/openapi.json -o src/types/api.d.ts"
   },
   "dependencies": {

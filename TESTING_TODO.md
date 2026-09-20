@@ -5,6 +5,7 @@
 
 - Backend: 843 collected, 839 passed + 4 skipped (100% pass rate)
 - Frontend: 87 tests passing, 0 skipped (11 test files)
+- E2E (Playwright): 1 scenario (`e2e/not-logged-in.spec.ts`) — run on demand via `npm run test:e2e`, separate from `npm test`
 
 This document tracks testing priorities and progress for the WH40k Colony Manager project.
 It complements .clinerules/04-testing-strategy.md with specific implementation tasks.
@@ -38,6 +39,24 @@ It complements .clinerules/04-testing-strategy.md with specific implementation t
 5. **API integration tests** using FastAPI TestClient with SQLite in-memory DB
 6. **Permission/authorization tests** for role-based access control (Phase 3)
 7. **Cross-feature workflow tests** using `auth_client` fixture (Phase 3)
+
+---
+
+## End-to-End (Playwright)
+
+First scenario added 2026-09-20: `e2e/not-logged-in.spec.ts` — an anonymous
+visitor entering the page sees the login screen (and a 401 from `/auth/me`),
+never the dashboard.
+
+The E2E suite runs **on demand** (or in CI for large changes), by design **not**
+part of `npm test`. It targets the self-contained mock stack (`npm run dev:mock`,
+`server.ts` on `:3000`); no Python backend, database, or seeded users needed.
+
+```bash
+npm run test:e2e            # run all specs (starts the mock server)
+npm run test:e2e:install    # one-time Chromium install
+npm run typecheck:e2e       # type-check specs without running them
+```
 
 ---
 

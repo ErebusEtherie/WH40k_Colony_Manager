@@ -176,7 +176,7 @@ npm run dev:app
 >   (`:8000`). Use this for Option A local development, and for manual / E2E
 >   testing against the real API.
 > - `npm run dev:mock` (alias of `npm run dev`) — the real frontend served
->   together with the **mock Express backend** (`server.ts`, port `:8001`) that
+>   together with the **mock Express backend** (`server.ts`, same `:3000` origin) that
 >   simulates the API for UI work when you don't want the Python backend
 >   running. The demo users (LordCaptain, ArchMagos, Servitor) exist *only* in
 >   this mock.
@@ -393,6 +393,35 @@ uv run pytest --cov=colony_manager
 
 # Run specific test file
 uv run pytest tests/domain/test_colony.py -v
+```
+
+#### Frontend E2E (Playwright) — on demand
+
+E2E specs live in `e2e/` and are **not** part of `npm test` — they boot a real
+browser, so run them on demand for large/UI changes or in CI. They target the
+self-contained mock stack (`npm run dev:mock`, `server.ts` on `:3000`), which
+serves the SPA together with a cookie-authenticated mock of the API on the same
+origin — no Python backend, database, or seeded users required.
+`playwright.config.ts` forwards the SPA to that same origin
+(`VITE_API_BASE_URL=http://localhost:3000/api/v1`), overriding the gitignored
+`.env.local` that points at the real backend on `:8000`.
+
+```bash
+# One-time: install the Playwright Chromium browser
+npm run test:e2e:install
+
+# Run all E2E specs (starts the mock server automatically)
+npm run test:e2e
+
+# Run headed, to watch what the browser does
+npm run test:e2e:headed
+```
+
+First scenario: `e2e/not-logged-in.spec.ts` (an anonymous visitor is shown the
+login screen, not the dashboard). Type-check the specs without running them:
+
+```bash
+npm run typecheck:e2e
 ```
 
 ### Code Quality
