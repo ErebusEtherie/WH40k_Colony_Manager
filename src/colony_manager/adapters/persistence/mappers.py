@@ -45,8 +45,6 @@ from colony_manager.domain.models.user import User, UserRole
 
 
 def orm_to_domain_colony(orm: ColonyORM) -> Colony:
-    import json
-
     from colony_manager.domain.enums import DynastyOutcome, ResourceType
 
     # Parse planetary_resources from JSON
@@ -55,7 +53,7 @@ def orm_to_domain_colony(orm: ColonyORM) -> Colony:
         try:
             resource_strings = json.loads(orm.planetary_resources)
             planetary_resources = [ResourceType(r) for r in resource_strings]
-        except (json.JSONDecodeError, ValueError):
+        except ValueError:  # JSONDecodeError is a ValueError subclass
             planetary_resources = []
 
     # Parse dynasty_outcome
@@ -93,8 +91,6 @@ def orm_to_domain_colony(orm: ColonyORM) -> Colony:
 
 
 def domain_to_orm_colony(domain: Colony) -> ColonyORM:
-    import json
-
     # Serialize planetary_resources to JSON
     planetary_resources_json = None
     if domain.planetary_resources:

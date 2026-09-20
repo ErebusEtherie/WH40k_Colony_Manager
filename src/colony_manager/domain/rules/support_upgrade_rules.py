@@ -91,19 +91,11 @@ def get_support_upgrade_modifiers(
 
     # Handle standard stat effects from config
     for stat_effect in config.stat_effects:
-        # Check for conditional bonuses
-        final_value = stat_effect.value
-
-        if stat_effect.conditional_bonuses and colony_type:
-            for conditional in stat_effect.conditional_bonuses:
-                if colony_type.value in conditional.colony_types:
-                    final_value = conditional.value
-                    break
-
         # Skip if this is a custom_choice stat (handled separately)
         if stat_effect.stat == "custom_choice":
             continue
 
+        final_value, description = _resolve_stat_effect(stat_effect, colony_type)
         modifiers.append(
             Modifier(
                 colony_id=upgrade.colony_id,
@@ -111,9 +103,7 @@ def get_support_upgrade_modifiers(
                 modifier_category=ModifierCategory.PERMANENT,
                 modifier_stat=ModifierStat(stat_effect.stat),
                 modifier_value=final_value,
-                modifier_description=(
-                    f"{upgrade.name} ({_get_conditional_description(stat_effect, colony_type)})"
-                ),
+                modifier_description=f"{upgrade.name} ({description})",
                 is_active=True,
                 source_entity_id=upgrade.id,
             )
@@ -122,30 +112,32 @@ def get_support_upgrade_modifiers(
     return modifiers
 
 
-def _get_conditional_description(
+def _resolve_stat_effect(
     stat_effect: SupportUpgradeStatEffectConfig,
     colony_type: ColonyType | None,
-) -> str:
-    """Get description showing conditional bonus context.
+) -> tuple[int, str]:
+    """Resolve the final value and description for a stat effect.
+
+    When the colony type qualifies for a conditional bonus (e.g.,
+    Mechanicum's colony-type variants), the first matching conditional's
+    value applies; otherwise the base value is used.
 
     Args:
         stat_effect: The stat effect config.
         colony_type: The colony type.
 
     Returns:
-        Description string showing final value and context.
+        Tuple of (final_value, description) where description shows the
+        applied value and the qualifying colony type when conditional.
     """
-    if not stat_effect.conditional_bonuses:
-        return f"+{stat_effect.value}"
-
-    # Find if any conditional applies
-    if colony_type:
+    if stat_effect.conditional_bonuses and colony_type:
         for conditional in stat_effect.conditional_bonuses:
             if colony_type.value in conditional.colony_types:
-                return f"+{conditional.value} for {colony_type.value.replace('_', ' ').title()}"
-
-    # No conditional matched, show base value
-    return f"+{stat_effect.value}"
+                return (
+                    conditional.value,
+                    f"+{conditional.value} for {colony_type.value.replace('_', ' ').title()}",
+                )
+    return stat_effect.value, f"+{stat_effect.value}"
 
 
 def apply_support_upgrade_modifiers(
