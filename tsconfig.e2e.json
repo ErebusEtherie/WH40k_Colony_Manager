@@ -1,7 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    // The E2E config/specs run under Node (Playwright), so Node globals
+    // (process.env) must be explicit — do not rely on @types/* auto-inclusion.
+    "types": ["node"]
   },
   "include": ["e2e", "playwright.config.ts"]
 }
