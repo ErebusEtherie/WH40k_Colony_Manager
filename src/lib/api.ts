@@ -197,10 +197,12 @@ let csrfTokenPromise: Promise<string> | null = null;
  * Ensure a CSRF token is available, fetching it lazily from the backend when
  * one isn't already cached in memory.
  *
- * The backend also sets the same value in a non-HttpOnly cookie, which the
+ * The backend also mirrors this value into an HttpOnly cookie, which the
  * browser auto-attaches (via `credentials: 'include'`) to credentialed
- * requests; echoing it back as the X-CSRF-Token header satisfies the double-
- * submit check.
+ * requests; echoing the body value back as the X-CSRF-Token header satisfies
+ * the server-side double-submit check. The cookie is never read from
+ * `document.cookie` (HttpOnly blocks it) — the token always comes from this
+ * response body.
  *
  * Per 07-frontend-architecture.md this runs before the first mutating request
  * (and on session start), not only at login — the in-memory value resets on a

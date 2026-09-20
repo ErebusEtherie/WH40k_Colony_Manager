@@ -150,7 +150,7 @@
           "authentication"
         ],
         "summary": "Get Csrf Token",
-        "description": "Generate and return a CSRF token for the current session.\n\nThe CSRF token is stored in a non-HttpOnly cookie so JavaScript can read it\nand include it in the X-CSRF-Token header for state-changing requests.\n\nThis endpoint is public and does not require authentication.",
+        "description": "Generate and return a CSRF token for the current session.\n\nThe CSRF token is returned in the response body and mirrored in an HttpOnly\ncookie (double-submit pattern). The frontend reads the token from the\nresponse body (`ensureCsrfToken` in `src/lib/api.ts`) and echoes it in the\nX-CSRF-Token header for state-changing requests; the cookie carries the\nsame value for the server-side double-submit comparison\n(`CSRFProtectionMiddleware`). HttpOnly is safe here because the frontend\nnever reads this cookie via JavaScript.\n\nThis endpoint is public and does not require authentication.",
         "operationId": "get_csrf_token_api_v1_auth_csrf_token_get",
         "responses": {
           "200": {
@@ -640,7 +640,7 @@
           "colonies"
         ],
         "summary": "Manage Colony Age",
-        "description": "Manage colony age.\n\nSupports three operations:\n- add: Add days to current age (use negative values to decrease)\n- set: Set age to a specific value\n- subtract: Subtract days from current age\n\nArgs:\n    colony_id: The ID of the colony to update.\n    age_request: Request body containing the age operation.\n    \nRaises:\n    HTTPException: 404 if colony not found, 400 if invalid operation.",
+        "description": "Manage colony age.\n\nSupports three operations:\n- add: Add days to current age (use negative values to decrease)\n- set: Set age to a specific value\n- subtract: Subtract days from current age\n\nArgs:\n    colony_id: The ID of the colony to update.\n    age_request: Request body containing the age operation.\n\nRaises:\n    HTTPException: 404 if colony not found, 400 if invalid operation.",
         "operationId": "manage_colony_age_api_v1_colonies__colony_id__age_post",
         "parameters": [
           {
@@ -1088,7 +1088,7 @@
           "colonies"
         ],
         "summary": "Unassign Representative From Colony",
-        "description": "Unassign the current representative from a colony.\n\nThis endpoint atomically clears both the colony's representative_id and\nthe representative's assigned_to_colony_id.\n\nArgs:\n    colony_id: ID of the colony to unassign from.\n    current_user: Authenticated user with edit permission.\n    representative_service: Representative service for unassignment.\n\nReturns:\n    RepresentativeResponse with the unassigned representative and change tracking info.\n\nRaises:\n    HTTPException: 404 if no representative is assigned to the colony, 400 for unassignment errors.",
+        "description": "Unassign the current representative from a colony.\n\nThis endpoint atomically clears both the colony's representative_id and\nthe representative's assigned_to_colony_id.\n\nArgs:\n    colony_id: ID of the colony to unassign from.\n    current_user: Authenticated user with edit permission.\n    representative_service: Representative service for unassignment.\n\nReturns:\n    RepresentativeResponse with the unassigned representative and change tracking info.\n\nRaises:\n    HTTPException: 404 if no representative is assigned to the colony,\n        400 for unassignment errors.",
         "operationId": "unassign_representative_from_colony_api_v1_colonies__colony_id__representative_delete",
         "parameters": [
           {

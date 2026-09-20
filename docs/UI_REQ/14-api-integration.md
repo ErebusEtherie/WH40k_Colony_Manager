@@ -23,7 +23,7 @@ Authentication is cookie-based. The session lives in an HttpOnly cookie set by `
 | Token | Storage | Security |
 |-------|---------|----------|
 | Session | httpOnly cookie | Secure, HttpOnly, auto-sent |
-| CSRF | JS-readable cookie (`/auth/csrf-token`) | Double-submit protection |
+| CSRF | Body token + HttpOnly cookie (`/auth/csrf-token`) | Double-submit protection |
 
 ### Auth Headers
 

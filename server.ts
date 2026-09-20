@@ -321,8 +321,10 @@ async function startAppServer() {
 
   // CSRF protection mirroring the backend's CSRFProtectionMiddleware: every
   // state-changing request (except the pre-auth auth endpoints) must echo the
-  // JS-readable csrf_token cookie in the X-CSRF-Token header. The FE's shared
-  // request layer does this automatically (ensureCsrfToken in src/lib/api.ts).
+  // csrf_token value (read from the response body) in the X-CSRF-Token header.
+  // The FE's shared request layer does this automatically (ensureCsrfToken in
+  // src/lib/api.ts). The cookie is HttpOnly; this middleware reads it
+  // server-side from the request, which HttpOnly does not affect.
   app.use((req, res, next) => {
     if (req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS") {
       return next();
@@ -393,10 +395,12 @@ async function startAppServer() {
   // Authentication routes
   app.get("/api/v1/auth/csrf-token", (_req, res) => {
     const csrfToken = randomBytes(32).toString("base64url");
-    // JS-readable cookie so the FE can echo it as X-CSRF-Token (double-submit
-    // pattern), exactly like the backend /auth/csrf-token endpoint.
+    // HttpOnly cookie mirroring the backend /auth/csrf-token endpoint: the FE
+    // reads the token from the response body below (ensureCsrfToken), never
+    // from document.cookie, and the middleware above compares header vs.
+    // cookie server-side.
     res.cookie(CSRF_COOKIE, csrfToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
       sameSite: "strict",
       path: "/",

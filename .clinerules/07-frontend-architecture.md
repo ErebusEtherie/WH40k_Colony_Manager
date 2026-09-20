@@ -282,15 +282,20 @@ Moving to cookies reintroduces CSRF, which Bearer-in-header doesn't have
 (a forged cross-site request can't set a custom header, but it can trigger
 a cookie-bearing request). The backend now exposes
 `GET /api/v1/auth/csrf-token`, confirmed to implement the double-submit
-pattern: it sets a non-HttpOnly, JS-readable cookie containing the CSRF
-token. Frontend rule:
+pattern: it returns the CSRF token in the response body and mirrors the same
+value in an HttpOnly cookie (double-submit). Same-origin JS reads the token
+from the `/auth/csrf-token` response body — never from `document.cookie`,
+which the HttpOnly flag blocks — so the cookie stays HttpOnly. Frontend
+rule:
 
 1. On session start (or before the first mutating request if no session
-   exists yet), call `/auth/csrf-token` once so the CSRF cookie is set.
-2. Read the CSRF cookie's value and echo it as an `X-CSRF-Token` header on
-   every state-changing request (`POST`/`PUT`/`PATCH`/`DELETE`) — this
-   should live in the same shared request layer that already attaches
-   `credentials: 'include'`, not be added per-feature.
+   exists yet), call `/auth/csrf-token` once so the token is cached in
+   memory and the CSRF cookie is set.
+2. Echo the CSRF token (from the `/auth/csrf-token` response body) as an
+   `X-CSRF-Token` header on every state-changing request
+   (`POST`/`PUT`/`PATCH`/`DELETE`) — this should live in the same shared
+   request layer that already attaches `credentials: 'include'`, not be
+   added per-feature.
 3. `SameSite=Lax` or `Strict`, `Secure`, `HttpOnly` on the actual
    session/refresh cookies, and explicit non-wildcard CORS with
    `allow_credentials=True` (per "Environment & Configuration" below),

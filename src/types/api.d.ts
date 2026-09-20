@@ -94,8 +94,13 @@ export interface paths {
          * Get Csrf Token
          * @description Generate and return a CSRF token for the current session.
          *
-         *     The CSRF token is stored in a non-HttpOnly cookie so JavaScript can read it
-         *     and include it in the X-CSRF-Token header for state-changing requests.
+         *     The CSRF token is returned in the response body and mirrored in an HttpOnly
+         *     cookie (double-submit pattern). The frontend reads the token from the
+         *     response body (`ensureCsrfToken` in `src/lib/api.ts`) and echoes it in the
+         *     X-CSRF-Token header for state-changing requests; the cookie carries the
+         *     same value for the server-side double-submit comparison
+         *     (`CSRFProtectionMiddleware`). HttpOnly is safe here because the frontend
+         *     never reads this cookie via JavaScript.
          *
          *     This endpoint is public and does not require authentication.
          */
@@ -525,7 +530,8 @@ export interface paths {
          *         RepresentativeResponse with the unassigned representative and change tracking info.
          *
          *     Raises:
-         *         HTTPException: 404 if no representative is assigned to the colony, 400 for unassignment errors.
+         *         HTTPException: 404 if no representative is assigned to the colony,
+         *             400 for unassignment errors.
          */
         delete: operations["unassign_representative_from_colony_api_v1_colonies__colony_id__representative_delete"];
         options?: never;
