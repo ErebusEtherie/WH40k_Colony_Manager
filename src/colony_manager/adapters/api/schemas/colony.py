@@ -62,7 +62,7 @@ class ColonyCreate(BaseModel):
     # advanced-stage colonies (pre-grown settlements). This is a deliberate override
     # of the type's base_stats.size, so defaults and auth/audit semantics are explicit.
     base_size: int | None = Field(
-        None,
+        default=None,
         ge=0,
         le=10,
         description="Initial settlement size; defaults to the colony type's base size.",

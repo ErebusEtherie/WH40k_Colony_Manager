@@ -61,7 +61,9 @@ class TokenRevokeAllRequest(BaseModel):
     """Request schema for revoking all user tokens."""
 
     user_id: int | None = Field(
-        None, gt=0, description="Target user ID (admin only). If omitted, revokes own tokens."
+        default=None,
+        gt=0,
+        description="Target user ID (admin only). If omitted, revokes own tokens.",
     )
     reason: str | None = Field(
         default=None, max_length=100, description="Optional reason for revocation"
