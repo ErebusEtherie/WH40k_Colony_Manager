@@ -311,8 +311,13 @@ def login(
 async def get_csrf_token(request: Request) -> JSONResponse:
     """Generate and return a CSRF token for the current session.
 
-    The CSRF token is stored in a non-HttpOnly cookie so JavaScript can read it
-    and include it in the X-CSRF-Token header for state-changing requests.
+    The CSRF token is returned in the response body and mirrored in an HttpOnly
+    cookie (double-submit pattern). The frontend reads the token from the
+    response body (`ensureCsrfToken` in `src/lib/api.ts`) and echoes it in the
+    X-CSRF-Token header for state-changing requests; the cookie carries the
+    same value for the server-side double-submit comparison
+    (`CSRFProtectionMiddleware`). HttpOnly is safe here because the frontend
+    never reads this cookie via JavaScript.
 
     This endpoint is public and does not require authentication.
     """
@@ -320,13 +325,21 @@ async def get_csrf_token(request: Request) -> JSONResponse:
 
     response = JSONResponse(content={"csrf_token": csrf_token})
 
-    # Set CSRF token in a non-HttpOnly cookie (JavaScript needs to read it)
+    # The FE obtains the token from the response body, never from
+    # document.cookie, so the cookie does not need to be JS-readable. HttpOnly
+    # is strictly more defensive: even if XSS runs on the page, it cannot read
+    # the stored cookie value (the per-request body value is visible to
+    # same-origin JS by design, inherent to the double-submit pattern). The
+    # pattern still works because HttpOnly only blocks JS `document.cookie`
+    # reads - it does not prevent the browser from attaching the cookie to
+    # credentialed requests, which is what the middleware compares against the
+    # header value.
     settings = get_security_settings()
     response.set_cookie(
         key="csrf_token",
         value=csrf_token,
         max_age=60 * 60,  # 1 hour
-        httponly=False,  # Must be readable by JavaScript
+        httponly=True,  # FE reads the token from the response body, not the cookie
         secure=settings.cookie_secure,
         samesite="strict",
         path="/",
