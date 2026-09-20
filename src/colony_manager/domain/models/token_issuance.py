@@ -29,6 +29,6 @@ class TokenIssuance(BaseModel):
     token_type: str = Field(..., pattern="^(access|refresh)$")
     issued_at: datetime = Field(..., description="When the token was issued")
     expires_at: datetime = Field(..., description="When the token expires")
-    revoked_at: datetime | None = Field(None, description="When the token was revoked")
-    ip_address: str | None = Field(None, max_length=45)  # IPv6 max length
-    user_agent: str | None = Field(None, max_length=500)
+    revoked_at: datetime | None = Field(default=None, description="When the token was revoked")
+    ip_address: str | None = Field(default=None, max_length=45)  # IPv6 max length
+    user_agent: str | None = Field(default=None, max_length=500)

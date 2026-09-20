@@ -23,7 +23,7 @@ class LoginAttempt(BaseModel):
 
     id: int | None = None
     username: str = Field(..., min_length=1, max_length=50)
-    ip_address: str | None = Field(None, max_length=45)  # IPv6 max length
+    ip_address: str | None = Field(default=None, max_length=45)  # IPv6 max length
     attempted_at: datetime = Field(..., description="When the attempt occurred")
     success: bool = Field(default=False, description="Whether login succeeded")
-    user_agent: str | None = Field(None, max_length=500)
+    user_agent: str | None = Field(default=None, max_length=500)

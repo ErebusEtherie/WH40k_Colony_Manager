@@ -19,7 +19,7 @@ class ResourceCreate(BaseModel):
 class ResourceUpdate(BaseModel):
     """Schema for updating a planetary resource (partial update)."""
 
-    abundance: int | None = Field(None, ge=0)
+    abundance: int | None = Field(default=None, ge=0)
     notes: str | None = None
 
 

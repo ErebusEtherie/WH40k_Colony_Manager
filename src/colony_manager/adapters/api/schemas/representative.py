@@ -125,7 +125,7 @@ class RepresentativeCreate(BaseModel):
 class RepresentativeUpdate(BaseModel):
     """Schema for updating a representative (partial update)."""
 
-    name: str | None = Field(None, min_length=1, max_length=100)
+    name: str | None = Field(default=None, min_length=1, max_length=100)
     personalities: list[PersonalityCreate] | None = None
     stats: RepresentativeStatsCreate | None = None
     skills: list[Skill] | None = None

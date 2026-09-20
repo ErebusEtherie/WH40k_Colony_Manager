@@ -55,7 +55,7 @@ class ColonyCreate(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=100)
     founder_name: str = Field(..., min_length=1, max_length=100)
-    patron_name: str | None = Field(None, min_length=1, max_length=100)
+    patron_name: str | None = Field(default=None, min_length=1, max_length=100)
     colony_type: ColonyType
     # Optional starting settlement size. When omitted the colony is founded at the
     # colony type's base size (usually 1); supplying a larger value allows founding
@@ -72,10 +72,10 @@ class ColonyCreate(BaseModel):
 class ColonyUpdate(BaseModel):
     """Schema for updating a colony (partial update)."""
 
-    name: str | None = Field(None, min_length=1, max_length=100)
-    founder_name: str | None = Field(None, min_length=1, max_length=100)
-    patron_name: str | None = Field(None, min_length=1, max_length=100)
-    age_days: int | None = Field(None, ge=0)
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    founder_name: str | None = Field(default=None, min_length=1, max_length=100)
+    patron_name: str | None = Field(default=None, min_length=1, max_length=100)
+    age_days: int | None = Field(default=None, ge=0)
     current_event: str | None = None
 
 
@@ -90,9 +90,11 @@ class ColonyAgeAdvance(BaseModel):
     Use 'add' for both increasing and decreasing age.
     """
 
-    add: int | None = Field(None, description="Days to add (can be negative to decrease)")
-    set: int | None = Field(None, ge=0, description="Set age to specific value")
-    subtract: int | None = Field(None, ge=0, description="Days to subtract from current age")
+    add: int | None = Field(default=None, description="Days to add (can be negative to decrease)")
+    set: int | None = Field(default=None, ge=0, description="Set age to specific value")
+    subtract: int | None = Field(
+        default=None, ge=0, description="Days to subtract from current age"
+    )
 
     def get_days_delta(self, current_age: int) -> int:
         """Calculate the new age based on the operation.
