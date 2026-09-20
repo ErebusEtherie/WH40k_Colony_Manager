@@ -5,7 +5,7 @@ Cross-Site Request Forgery attacks.
 """
 
 from fastapi import Request, status
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import JSONResponse, Response
 
 
@@ -36,7 +36,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         }
     )
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Skip CSRF check for safe methods
         if request.method in ("GET", "HEAD", "OPTIONS"):
             return await call_next(request)

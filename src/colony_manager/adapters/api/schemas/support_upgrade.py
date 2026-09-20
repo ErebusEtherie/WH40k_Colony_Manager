@@ -58,6 +58,6 @@ class SupportUpgradeValidationResponse(BaseModel):
     """Response for support upgrade validation."""
 
     valid: bool
-    modifiers_preview: list[dict]
+    modifiers_preview: list[dict[str, object]]
     colony_type_bonus_applied: bool
     bonus_description: str | None

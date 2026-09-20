@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from slowapi.errors import RateLimitExceeded
 
 from colony_manager.adapters.api import dependencies
@@ -240,10 +240,8 @@ endpoints will automatically use your token.
 
     # Custom Swagger UI route with cookie-based auth support
     @app.get("/docs", include_in_schema=False)
-    async def custom_swagger_ui_html():
+    async def custom_swagger_ui_html() -> HTMLResponse:
         """Serve custom Swagger UI (cookie-based auth; no Bearer tokens)."""
-        from fastapi.responses import HTMLResponse
-
         # openapi_url is set by FastAPI after app creation, default is "/openapi.json"
         openapi_url = app.openapi_url or "/openapi.json"
         return HTMLResponse(

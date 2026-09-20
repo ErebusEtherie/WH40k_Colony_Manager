@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 
 from colony_manager.adapters.io.mappers import domain_to_save_file
+from colony_manager.adapters.io.save_file_schema import SaveColonyUser
 from colony_manager.application.services.user_service import UserService
 from colony_manager.domain.models.colony import Colony
 from colony_manager.domain.models.colony_user import ColonyUser
@@ -44,11 +45,11 @@ class ColonyExporter:
             JSON string of the save file
         """
         # Enrich colony_users with usernames if user_service is provided
-        enriched_colony_users = colony_users
+        colony_users_to_export: list[ColonyUser] | list[SaveColonyUser] | None = colony_users
         if colony_users and user_service:
             from colony_manager.adapters.io.mappers import domain_to_save_colony_user
 
-            enriched_colony_users = []
+            export_users: list[SaveColonyUser] = []
             for cu in colony_users:
                 save_cu = domain_to_save_colony_user(cu)
                 # Look up username
@@ -61,10 +62,11 @@ class ColonyExporter:
                         cu.user_id,
                         colony.id,
                     )
-                enriched_colony_users.append(save_cu)
+                export_users.append(save_cu)
+            colony_users_to_export = export_users
 
         save_file = domain_to_save_file(
-            colony, representative, events, development_plans, enriched_colony_users
+            colony, representative, events, development_plans, colony_users_to_export
         )
         payload = save_file.model_dump_json(indent=2)
         if path is not None:

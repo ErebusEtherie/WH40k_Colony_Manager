@@ -186,7 +186,7 @@ def orm_to_domain_modifier(orm: ModifierORM) -> Modifier:
         modifier_category=ModifierCategory(orm.modifier_category),
         modifier_stat=ModifierStat(orm.modifier_stat),
         modifier_value=orm.modifier_value,
-        description=orm.modifier_description,
+        modifier_description=orm.modifier_description,
         is_active=orm.is_active,
         expires_at=orm.expires_at,
         source_entity_id=orm.source_entity_id,

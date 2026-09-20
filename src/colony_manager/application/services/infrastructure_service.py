@@ -1,6 +1,8 @@
 """Infrastructure service for managing colony infrastructure."""
 
 import logging
+from collections.abc import Mapping
+from typing import Any
 
 from colony_manager.domain.enums import InfrastructureState
 from colony_manager.domain.errors import NotFoundError
@@ -270,7 +272,7 @@ class InfrastructureService:
     def update_infrastructure_batch(
         self,
         infrastructure_id: int,
-        update_data: dict,
+        update_data: Mapping[str, object],
         changed_by: int | None = None,
     ) -> Infrastructure:
         """Update multiple fields on infrastructure in a single batch operation.
@@ -373,7 +375,7 @@ class InfrastructureService:
         self,
         infrastructure_id: int,
         new_state: InfrastructureState,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Preview the effects of a state transition without applying it.
 
@@ -382,7 +384,10 @@ class InfrastructureService:
             new_state: The requested new state.
 
         Returns:
-            Dictionary with validation results and modifiers preview.
+            Dictionary with validation results and modifiers preview. Values are
+            intentionally untyped (`dict[str, Any]`): the by-key shape duplicates
+            InfrastructureValidationResponse, so a parallel TypedDict is avoided
+            to prevent schema drift.
         """
         from colony_manager.domain.rules.infrastructure_rules import (
             apply_infrastructure_modifiers,
@@ -392,7 +397,7 @@ class InfrastructureService:
         current_state = infrastructure.state
         would_apply_penalty = False
         penalty_description: str | None = None
-        modifiers_preview: list[dict] = []
+        modifiers_preview: list[dict[str, object]] = []
 
         # Create a temporary infrastructure with the new state
         temp_infra = infrastructure.model_copy(update={"state": new_state})

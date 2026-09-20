@@ -36,7 +36,10 @@ class ColonyUserService:
         Raises:
             NotFoundError: If user does not exist.
         """
-        if not self._user_repository.get_by_id(user_id):
+        user_repository = self._user_repository
+        if user_repository is None:
+            raise RuntimeError("User repository is not configured; cannot validate user")
+        if not user_repository.get_by_id(user_id):
             raise NotFoundError(f"User {user_id} not found")
 
     def add_member(

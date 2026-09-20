@@ -105,7 +105,7 @@ def save_file_to_domain(save_file: ColonySaveFile) -> dict[str, Any]:
                 modifier_category=modifier.modifier_category,
                 modifier_stat=modifier.modifier_stat,
                 modifier_value=modifier.modifier_value,
-                description=modifier.modifier_description,
+                modifier_description=modifier.modifier_description,
                 is_active=modifier.is_active,
             )
             for modifier in save_file.modifiers

@@ -1,6 +1,9 @@
 """Support Upgrade service for managing colony support upgrades."""
 
 import logging
+from collections.abc import Mapping
+from enum import Enum
+from typing import Any
 
 from colony_manager.domain.enums import ModifierStat
 from colony_manager.domain.errors import NotFoundError
@@ -386,16 +389,18 @@ class SupportUpgradeService:
             The old value as a string, or None if the field doesn't exist.
         """
         value = getattr(upgrade, field, None)
+        if value is None:
+            return None
         # Handle enum values (like custom_stat_choice)
-        if hasattr(value, "value"):
-            return value.value
-        return value
+        if isinstance(value, Enum):
+            return str(value.value)
+        return str(value)
 
     def _apply_field_update(
         self,
         upgrade: SupportUpgrade,
         field: str,
-        update_data: dict,
+        update_data: Mapping[str, object],
         changes_made: list[tuple[str, str | None, str | None]],
     ) -> SupportUpgrade:
         """Apply a single field update and track the change for audit logging.
@@ -415,13 +420,13 @@ class SupportUpgradeService:
 
         old_value = self._get_field_old_value(upgrade, field)
         upgrade = upgrade.model_copy(update={field: new_value})
-        changes_made.append((field, old_value, new_value))
+        changes_made.append((field, old_value, str(new_value)))
         return upgrade
 
     def update_upgrade_batch(
         self,
         upgrade_id: int,
-        update_data: dict,
+        update_data: Mapping[str, object],
         changed_by: int | None = None,
     ) -> SupportUpgrade:
         """Update multiple fields on a support upgrade in a single batch operation.
@@ -476,8 +481,8 @@ class SupportUpgradeService:
     def preview_upgrade_changes(
         self,
         upgrade_id: int,
-        update_data: dict,
-    ) -> dict:
+        update_data: Mapping[str, object],
+    ) -> dict[str, Any]:
         """
         Preview the effects of upgrade changes without applying them.
 
@@ -486,19 +491,22 @@ class SupportUpgradeService:
             update_data: Dictionary of fields to update (name, notes, custom_stat_choice, etc.).
 
         Returns:
-            Dictionary with validation results and modifiers preview.
+            Dictionary with validation results and modifiers preview. Values are
+            intentionally untyped (`dict[str, Any]`): the by-key shape duplicates
+            SupportUpgradeValidationResponse, so a parallel TypedDict is avoided
+            to prevent schema drift.
         """
         from colony_manager.domain.rules.support_upgrade_rules import (
             get_support_upgrade_modifiers,
         )
 
         upgrade = self.get_upgrade(upgrade_id)
-        modifiers_preview: list[dict] = []
+        modifiers_preview: list[dict[str, object]] = []
         colony_type_bonus_applied = False
         bonus_description: str | None = None
 
         # Build temporary upgrade with proposed changes
-        temp_upgrade_data = {
+        temp_upgrade_data: dict[str, object] = {
             "custom_stat_choice": upgrade.custom_stat_choice,
             "custom_product": upgrade.custom_product,
             "affiliated_group": upgrade.affiliated_group,

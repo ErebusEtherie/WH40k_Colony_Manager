@@ -61,6 +61,6 @@ class InfrastructureValidationResponse(BaseModel):
     valid: bool
     current_state: InfrastructureState
     requested_state: InfrastructureState
-    modifiers_preview: list[dict]
+    modifiers_preview: list[dict[str, object]]
     would_apply_penalty: bool
     penalty_description: str | None

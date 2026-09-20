@@ -16,6 +16,7 @@ from colony_manager.config.config_loaders import (
     ConfigurationError,
     SupportUpgradeConfig,
     SupportUpgradeConfigLoader,
+    SupportUpgradeStatEffectConfig,
 )
 from colony_manager.domain.enums import (
     ColonyType,
@@ -122,7 +123,7 @@ def get_support_upgrade_modifiers(
 
 
 def _get_conditional_description(
-    stat_effect,
+    stat_effect: SupportUpgradeStatEffectConfig,
     colony_type: ColonyType | None,
 ) -> str:
     """Get description showing conditional bonus context.

@@ -5,7 +5,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from colony_manager.adapters.api import dependencies
 from colony_manager.adapters.api.dependencies import get_colony_service, get_representative_service
 from colony_manager.adapters.api.middleware.auth import get_current_user_from_cookie
 from colony_manager.adapters.api.middleware.permissions import require_colony_permission
@@ -30,6 +29,7 @@ from colony_manager.adapters.api.schemas.modifier import (
 )
 from colony_manager.adapters.api.schemas.representative import RepresentativeResponse
 from colony_manager.application.services.colony_service import ColonyService, StatBreakdownDict
+from colony_manager.application.services.representative_service import RepresentativeService
 from colony_manager.domain.errors import ColonyManagerError, NotFoundError
 from colony_manager.domain.models.audit_log import AuditLogAction
 from colony_manager.domain.models.colony import Colony
@@ -730,9 +730,7 @@ async def assign_representative_to_colony(
     representative_id: int,
     current_user: Annotated[User, Depends(require_colony_permission("edit"))],
     colony_service: Annotated[ColonyService, Depends(get_colony_service)],
-    representative_service: Annotated[
-        dependencies.RepresentativeService, Depends(get_representative_service)
-    ],
+    representative_service: Annotated[RepresentativeService, Depends(get_representative_service)],
 ) -> RepresentativeResponse:
     """Assign a representative to a colony.
 
@@ -805,9 +803,7 @@ async def assign_representative_to_colony(
 async def unassign_representative_from_colony(
     colony_id: int,
     current_user: Annotated[User, Depends(require_colony_permission("edit"))],
-    representative_service: Annotated[
-        dependencies.RepresentativeService, Depends(get_representative_service)
-    ],
+    representative_service: Annotated[RepresentativeService, Depends(get_representative_service)],
 ) -> RepresentativeResponse:
     """Unassign the current representative from a colony.
 
