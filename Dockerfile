@@ -46,6 +46,10 @@ COPY src/colony_manager/ ./colony_manager/
 COPY config/ ./config/
 COPY alembic/ ./alembic/
 COPY alembic.ini ./
+# Demo-user provisioning (dev only, see scripts/create_demo_users.py). Only
+# exercised when the container is started with SEED_DEMO_USERS=true (the dev
+# docker-compose.yml sets it; docker-compose.prod.yml never does).
+COPY scripts/create_demo_users.py ./scripts/create_demo_users.py
 
 # Set environment variables
 ENV PATH="/app/.venv/bin:$PATH"
@@ -66,5 +70,13 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')" || exit 1
 
-# Run with uvicorn (factory pattern)
-CMD ["uvicorn", "colony_manager.adapters.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Run migrations, then start uvicorn (factory pattern). Running `alembic
+# upgrade head` at every container start keeps the persisted /data volume in
+# sync with the ORM schema: the app's startup only calls init_db()
+# (create-only), which never alters existing tables and never stamps
+# alembic_version, so without this step a schema change (e.g. the star_system
+# addition) fails on an existing volume with "no column named ...". Fresh
+# volumes get a migration-tracked schema from the start. For volumes already
+# created by an older image via init_db() (tables present, no alembic_version),
+# stamp once manually: `alembic stamp head`.
+CMD ["sh", "-c", "python -m alembic upgrade head && if [ \"${SEED_DEMO_USERS}\" = \"true\" ]; then python scripts/create_demo_users.py; fi && exec uvicorn colony_manager.adapters.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 2"]

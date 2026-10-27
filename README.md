@@ -178,8 +178,10 @@ npm run dev:app
 > - `npm run dev:mock` (alias of `npm run dev`) — the real frontend served
 >   together with the **mock Express backend** (`server.ts`, same `:3000` origin) that
 >   simulates the API for UI work when you don't want the Python backend
->   running. The demo users (LordCaptain, ArchMagos, Servitor) exist *only* in
->   this mock.
+>   running. The demo users (LordCaptain, ArchMagos, Servitor) are simulated in
+>   this mock and mirrored in the real backend by `scripts/create_demo_users.py`
+>   (same identities, same `TestP@ss123` password), so both stacks share one demo
+>   identity set.
 
 #### Creating users
 
@@ -240,19 +242,20 @@ creation). Which you need depends on what you want to test:
 
 3. **All three demo users at once (recommended for local testing)** — the
    `scripts/create_demo_users.py` helper creates one user per role in a single
-   run: a `viewer`, an elevated `rogue_trader` (`colony_manager`), and an
-   `admin`. With the **backend stopped** (SQLite lock on Windows), run from
+   run, using the same identities the app's dev-mode login buttons present:
+   `LordCaptain` (`colony_manager`), `ArchMagos` (`admin`), and `Servitor`
+   (`viewer`). With the **backend stopped** (SQLite lock on Windows), run from
    the project root:
 
    ```bash
    uv run python scripts/create_demo_users.py
    ```
 
-   | Username | System role | Can do |
-   | --- | --- | --- |
-   | `viewer` | `viewer` | log in and view |
-   | `rogue_trader` | `colony_manager` | charter and manage colonies, record events/modifiers |
-   | `admin` | `admin` | everything, including user management |
+   | Username | System role | Dev login button | Can do |
+   | --- | --- | --- | --- |
+   | `LordCaptain` | `colony_manager` | Lord Captain | charter and manage colonies, record events/modifiers |
+   | `ArchMagos` | `admin` | Arch Magos | everything, including user management |
+   | `Servitor` | `viewer` | Servitor | log in and view |
 
    All three share the password `TestP@ss123` (satisfies the configured
    complexity rules). The script is **idempotent** — re-running it won't

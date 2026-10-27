@@ -136,6 +136,43 @@ def test_colony_dossier_notes_roundtrip(auth_client):
     assert item["notes"] == ""
 
 
+def test_colony_star_system_roundtrip(auth_client):
+    """GM-entered star system persists through create -> get -> update -> list.
+
+    Regression guard for the repository ``update()`` omitting ``star_system``
+    (colony_repository_impl.py) — the Edit Charter flow silently dropped star
+    system changes while persisting other fields (e.g. notes).
+    """
+    create_data = {
+        "name": "Star System Test",
+        "founder_name": "Owner",
+        "colony_type": "mining_and_industry",
+        "star_system": "Mundus Valancius",
+    }
+    response = auth_client.post("/api/v1/colonies", json=create_data)
+    assert response.status_code == 201
+    colony = response.json()
+    assert colony["star_system"] == "Mundus Valancius"
+
+    # GET returns the persisted star system.
+    response = auth_client.get(f"/api/v1/colonies/{colony['id']}")
+    assert response.status_code == 200
+    assert response.json()["star_system"] == "Mundus Valancius"
+
+    # PUT can overwrite the star system (Edit Charter flow).
+    response = auth_client.put(
+        f"/api/v1/colonies/{colony['id']}", json={"star_system": "Koronus Expanse"}
+    )
+    assert response.status_code == 200
+    assert response.json()["star_system"] == "Koronus Expanse"
+
+    # The list endpoint returns star_system so the FE can render the dossier header.
+    response = auth_client.get("/api/v1/colonies")
+    assert response.status_code == 200
+    item = next(c for c in response.json()["items"] if c["id"] == colony["id"])
+    assert item["star_system"] == "Koronus Expanse"
+
+
 def test_create_colony_without_notes_defaults_none(auth_client):
     """Omitting notes at creation leaves the dossier description empty, not fabricated."""
     create_data = {

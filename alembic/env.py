@@ -1,4 +1,6 @@
+import os
 from logging.config import fileConfig
+from pathlib import Path
 
 from sqlalchemy import engine_from_config, pool
 
@@ -7,6 +9,26 @@ from alembic import context  # type: ignore[attr-defined]
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Default DB file when DATABASE_PATH is not set. Must mirror the application's
+# default (config/settings.py, adapters/api/dependencies.py, scripts/create_demo_users.py).
+DEFAULT_DB_FILE = "colony_manager.sqlite"
+
+
+def _database_url() -> str:
+    """Resolve the SQLite URL the same way the running app does.
+
+    ``DATABASE_PATH`` (set by docker-compose to ``/data/colony_manager.sqlite``
+    and by ``.env.production``) wins when present; otherwise fall back to the
+    default ``colony_manager.sqlite`` in the project root (the parent of this
+    ``alembic/`` directory). Keeping Alembic on the app's exact resolution
+    prevents migrations targeting a different file than the one the backend
+    reads (the drift that previously pointed at a stale ``data/`` copy).
+    """
+    if configured := os.getenv("DATABASE_PATH"):
+        return f"sqlite:///{Path(configured).expanduser().resolve().as_posix()}"
+    project_root = Path(__file__).resolve().parent.parent
+    return f"sqlite:///{(project_root / DEFAULT_DB_FILE).as_posix()}"
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -37,7 +59,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = _database_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,8 +78,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    config_section = dict(config.get_section(config.config_ini_section, {}))
+    config_section["sqlalchemy.url"] = _database_url()
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

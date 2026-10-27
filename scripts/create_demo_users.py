@@ -6,9 +6,17 @@ registration (``/auth/register``) is locked to the ``viewer`` role, so this
 script creates the three demo accounts directly in SQLite, bypassing that
 limitation:
 
-    viewer        -> UserRole.VIEWER          (read-only login)
-    rogue_trader  -> UserRole.COLONY_MANAGER  (charters and manages colonies)
-    admin         -> UserRole.ADMIN           (full access, incl. user management)
+    LordCaptain -> UserRole.COLONY_MANAGER  (charters and manages colonies)
+    ArchMagos   -> UserRole.ADMIN           (full access, incl. user management)
+    Servitor    -> UserRole.VIEWER          (read-only login)
+
+The usernames mirror the one-click "clearance tier" identities the frontend
+presents when built with ``VITE_DEV_MODE=true`` (src/components/LoginScreen.tsx)
+and the identity Playwright's e2e suite logs in as (e2e/auth.setup.ts), so the
+same demo accounts work against the mock or the real backend. Seeding is
+dev-only: the Docker image only provisions them behind ``SEED_DEMO_USERS=true``
+(docker-compose.yml dev stack); the production compose never sets it, so
+known-credential demo accounts never reach a deployed database.
 
 The script is idempotent: usernames that already exist are left untouched, so
 it is safe to re-run.
@@ -39,11 +47,13 @@ from colony_manager.domain.util.auth import hash_password
 # complexity requirements enforced by validate_password.
 DEMO_PASSWORD = "TestP@ss123"
 
-# (username, email, role) triples for the three demo users.
+# (username, email, role) triples for the three demo users. Usernames match the
+# VITE_DEV_MODE one-click login buttons in src/components/LoginScreen.tsx and
+# the account the Playwright e2e suite logs in with (LordCaptain).
 DEMO_USERS: tuple[tuple[str, str, UserRole], ...] = (
-    ("viewer", "viewer@example.com", UserRole.VIEWER),
-    ("rogue_trader", "rogue_trader@example.com", UserRole.COLONY_MANAGER),
-    ("admin", "admin@example.com", UserRole.ADMIN),
+    ("LordCaptain", "lordcaptain@example.com", UserRole.COLONY_MANAGER),
+    ("ArchMagos", "archmagos@example.com", UserRole.ADMIN),
+    ("Servitor", "servitor@example.com", UserRole.VIEWER),
 )
 
 

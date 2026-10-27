@@ -47,6 +47,7 @@ class SqlAlchemyColonyRepository(ColonyRepository):
             orm.name = colony.name
             orm.founder_name = colony.founder_name
             orm.patron_name = colony.patron_name
+            orm.star_system = colony.star_system
             orm.colony_type = colony.colony_type
             orm.age_days = colony.age_days
             orm.age_last_updated = colony.age_last_updated

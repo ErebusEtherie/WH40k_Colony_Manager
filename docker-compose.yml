@@ -64,6 +64,12 @@ services:
       - LOG_LEVEL=INFO
       - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080,http://127.0.0.1:3000
       - CORS_ALLOW_CREDENTIALS=true
+      # DEV stack only: provision the demo-login identities
+      # (LordCaptain / ArchMagos / Servitor) at container start — matches the
+      # VITE_DEV_MODE one-click buttons in the frontend. Deliberately absent
+      # from docker-compose.prod.yml so known-credential demo accounts never
+      # reach a deployed database.
+      - SEED_DEMO_USERS=true
     volumes:
       - backend-data:/data
       - ./config:/app/config:ro
