@@ -69,18 +69,18 @@ export const Header: React.FC<HeaderProps> = ({
     const r = role.toLowerCase();
     if (r === "admin" || r.includes("admin") || r.includes("magos")) {
       return {
-        label: "ARCH MAGOS",
+        label: "ADMIN",
         classes: "bg-[#f59e0b]/15 text-[#fcd34d] border-[var(--mech-gold)]/40",
       };
     }
     if (r === "colony_manager" || r.includes("manager") || r.includes("captain")) {
       return {
-        label: "LORD CAPTAIN",
+        label: "COLONY MANAGER",
         classes: "bg-[#38bdf8]/15 text-[#7dd3fc] border-[#38bdf8]/40",
       };
     }
     return {
-      label: "SERVITOR",
+      label: "VIEWER",
       classes: "bg-[#64748b]/20 text-[#cbd5e1] border-[#64748b]/40",
     };
   };

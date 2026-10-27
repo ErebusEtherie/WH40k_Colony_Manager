@@ -56,6 +56,8 @@ class ColonyCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     founder_name: str = Field(..., min_length=1, max_length=100)
     patron_name: str | None = Field(default=None, min_length=1, max_length=100)
+    # Star system the colony resides in (blank = uncharted territory)
+    star_system: str | None = Field(default=None, max_length=100)
     colony_type: ColonyType
     # Optional starting settlement size. When omitted the colony is founded at the
     # colony type's base size (usually 1); supplying a larger value allows founding
@@ -67,6 +69,12 @@ class ColonyCreate(BaseModel):
         le=10,
         description="Initial settlement size; defaults to the colony type's base size.",
     )
+    # GM-authored dossier notes (Colony Dossier Notes & Strategic Intent)
+    notes: str | None = Field(
+        default=None,
+        max_length=2000,
+        description="Colony Dossier Notes & Strategic Intent entered at creation.",
+    )
 
 
 class ColonyUpdate(BaseModel):
@@ -75,8 +83,16 @@ class ColonyUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=100)
     founder_name: str | None = Field(default=None, min_length=1, max_length=100)
     patron_name: str | None = Field(default=None, min_length=1, max_length=100)
+    # Star system the colony resides in (blank = uncharted territory)
+    star_system: str | None = Field(default=None, max_length=100)
     age_days: int | None = Field(default=None, ge=0)
     current_event: str | None = None
+    # GM-authored dossier notes (Colony Dossier Notes & Strategic Intent)
+    notes: str | None = Field(
+        default=None,
+        max_length=2000,
+        description="Colony Dossier Notes & Strategic Intent.",
+    )
 
 
 class ColonyAgeAdvance(BaseModel):
@@ -130,6 +146,7 @@ class ColonyListItem(BaseModel):
     name: str
     founder_name: str
     patron_name: str | None
+    star_system: str | None = None
     colony_type: ColonyType
     age_days: int
     current_size: int
@@ -138,6 +155,8 @@ class ColonyListItem(BaseModel):
     current_productivity: int
     current_piety: int
     profit_factor: int
+    # GM-authored dossier notes (Colony Dossier Notes & Strategic Intent)
+    notes: str | None = None
 
 
 class ColonyResponse(BaseModel):
@@ -147,10 +166,13 @@ class ColonyResponse(BaseModel):
     name: str
     founder_name: str
     patron_name: str | None
+    star_system: str | None = None
     colony_type: ColonyType
     age_days: int
     age_last_updated: date
     current_event: str | None
+    # GM-authored dossier notes (Colony Dossier Notes & Strategic Intent)
+    notes: str | None = None
     base_complacency: int
     base_order: int
     base_productivity: int

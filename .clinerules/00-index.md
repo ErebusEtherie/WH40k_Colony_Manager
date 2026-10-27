@@ -20,7 +20,7 @@ order — keep it lean: every file adds to the always-loaded token budget
 | `06-collaboration.md` | Ask-don't-guess, conflict handling, ambiguity | Requirements that are unclear or conflicting |
 | `07-frontend-architecture.md` | FE stack, API contract, auth/CSRF/SSE, styling, state | Any frontend work |
 | `08-frontend-testing.md` | RTL/MSW/E2E priorities | Any frontend test work |
-| `09-workflow.md` | Change classification, required skills, resumption | Before starting: which gates apply to this change |
+| `09-workflow.md` | Change classification, skill selection & discovery, resumption | Before starting: which gates apply to this change |
 | `10-context-budget.md` | Token economy, retrieval strategy | Long/context-heavy or investigative tasks |
 | `11-tools.md` | Tool priority: which read/search/fetch tool to use | Deciding how to fetch or inspect something |
 

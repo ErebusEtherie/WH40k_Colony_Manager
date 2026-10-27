@@ -19,6 +19,8 @@ class Colony(BaseModel):
     name: str
     founder_name: str
     patron_name: str | None = None
+    # Star system the colony resides in; None/blank = uncharted territory
+    star_system: str | None = None
     colony_type: ColonyType
     age_days: int = Field(ge=0)
     age_last_updated: date
@@ -30,6 +32,8 @@ class Colony(BaseModel):
     representative_id: int | None = None
     # Current active event (GM-defined, optional)
     current_event: str | None = None
+    # GM-authored dossier notes (Colony Dossier Notes & Strategic Intent)
+    notes: str | None = None
     # Infrastructure and upgrades owned by this colony
     infrastructure: list[Infrastructure] = Field(default_factory=list)
     support_upgrades: list[SupportUpgrade] = Field(default_factory=list)

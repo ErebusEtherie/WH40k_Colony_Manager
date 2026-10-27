@@ -183,7 +183,7 @@ export function App() {
             : (payload?.items ?? []);
 
           if (coloniesList.length > 0) {
-            setColonies(coloniesList);
+            setColonies(coloniesList.map(toColonyWithAge));
             if (!coloniesList.some((c) => c.id === selectedColonyId)) {
               setSelectedColonyId(coloniesList[0].id);
             }
@@ -243,6 +243,45 @@ export function App() {
   const colonyResources = resources.filter((r) => r.colony_id === currentColony?.id);
   const colonyPlans = plans.filter((p) => p.colony_id === currentColony?.id);
 
+  // Backend Colony records carry age as `age_days`; the UI renders it as
+  // `founding_days`. Normalize on every server round-trip so the displayed
+  // age never silently collapses to 0.
+  const toColonyWithAge = (c: Colony): Colony => ({
+    ...c,
+    founding_days: c.founding_days ?? c.age_days ?? 0,
+  });
+
+  const handleSetAge = (ageDays: number) => {
+    if (!currentColony) return;
+    if (currentUser?.role === "viewer") {
+      alert("Clearance Denied: Servitor clearance is read-only. Lord Captain or Arch Magos clearance required.");
+      return;
+    }
+
+    setColonies((prev) =>
+      prev.map((c) =>
+        c.id === currentColony.id ? { ...c, founding_days: ageDays } : c
+      )
+    );
+
+    apiFetch(`/api/v1/colonies/${currentColony.id}/age`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ set: ageDays }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((updated) => {
+        if (updated?.id) {
+          setColonies((prev) =>
+            prev.map((c) =>
+              c.id === updated.id ? toColonyWithAge(updated) : c
+            )
+          );
+        }
+      })
+      .catch((err) => console.error("Set age error:", err));
+  };
+
   const handleAdvanceDays = (days: number) => {
     if (!currentColony) return;
     if (currentUser?.role === "viewer") {
@@ -267,7 +306,9 @@ export function App() {
       .then((updated) => {
         if (updated?.id) {
           setColonies((prev) =>
-            prev.map((c) => (c.id === updated.id ? updated : c))
+            prev.map((c) =>
+              c.id === updated.id ? toColonyWithAge(updated) : c
+            )
           );
         }
       })
@@ -408,7 +449,7 @@ export function App() {
     setColonies((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
 
     apiFetch(`/api/v1/colonies/${updated.id}`, {
-      method: "PATCH",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     }).catch(console.error);
@@ -1027,6 +1068,9 @@ export function App() {
               modifiers={colonyModifiers}
               resources={colonyResources}
               representative={currentRep}
+              onAdvanceDays={handleAdvanceDays}
+              onSetAge={handleSetAge}
+              onOpenEditCharter={() => setIsEditCharterOpen(true)}
               onOpenAddModifier={() => setIsAddModifierOpen(true)}
               onOpenLogResource={() => setIsLogResourceOpen(true)}
               onToggleModifier={handleToggleModifier}

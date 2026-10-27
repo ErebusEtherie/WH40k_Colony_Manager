@@ -113,6 +113,7 @@ class ColonySaveFile(BaseModel):
     name: str
     founder_name: str
     patron_name: str | None = None
+    star_system: str | None = None
     colony_type: str
     age_days: int = Field(ge=0)
     age_last_updated: str

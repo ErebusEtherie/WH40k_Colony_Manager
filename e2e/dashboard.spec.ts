@@ -44,10 +44,10 @@ test.describe("logged in", () => {
     await expect(page.getByText("LORD CAPTAIN", { exact: true })).toBeVisible();
 
     // --- The Overview tab has loaded with seed colony data ---
-    // Static dossier banner proves ColonyOverview mounted, which only happens
-    // once colonies have loaded from the API and one is selected.
+    // The dossier's star-system line proves ColonyOverview mounted, which
+    // only happens once colonies have loaded from the API and one is selected.
     await expect(
-      page.getByText("IMPERIAL VALANCIUS EXPANSE LOGISTICS")
+      page.getByText("Mundus Valancius", { exact: true })
     ).toBeVisible();
     // The selected colony's name heads the dossier — target the h1, since
     // that name also appears in the header dropdown and footer.

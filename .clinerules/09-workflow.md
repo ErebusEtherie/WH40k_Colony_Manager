@@ -49,6 +49,35 @@ loaded enhancement, not ambient ceremony:
 | `review-team` | A formal multi-perspective review is requested, or the change is medium+/architectural/public API/multi-module |
 | `security-first` | Change touches auth, authorization, secrets, untrusted input, config/infrastructure, or sensitive data |
 | `frontend-design` | UI/UX work requiring design-system-driven, non-generic interface work |
+| `find-skills` | Discovery/installation of agent skills — user asks "is there a skill for X"/"can you do X" or wants capabilities extended (skills.sh / `npx skills`); installing still requires explicit approval |
+| `mermaid-diagrams` | Creating any Mermaid diagram (flowchart, sequence, class, state, ER, Gantt) in markdown/doc output |
+| `architecture-diagramming` | System architecture diagrams — components, layers, subgraph boundaries, data flows (Mermaid flowcharts) |
+| `markdown-formatting` | PR descriptions, issue bodies, documentation, notes, or saved/published artifacts needing consistent Markdown conventions and templates |
+| `requirement-elicitation` | Gathering/defining project requirements ("help me define requirements", "figure out what to build") — writes `requirements-<project>.md` to the working directory (aim at `docs/` here) |
+| `issue-decomposition` | Breaking a feature/project description into GitHub-style work items (INVEST issues with story-point estimates) — always preview before creating |
+| `repairing-project-setup` | Agent-setup drift/repair — audit against this repo's actual scheme (`.clinerules/`, `docs/`); the skill targets `CLAUDE.md`/`AGENTS.md`, which this repo does not use, so project rules win |
+| `dependency-mapping` | Mapping task/issue dependencies — "what blocks what", blocking chains, critical path (Mermaid flowcharts; reads `gh`-accessible issues) |
+| `estimating-work-items` | Sizing/pointing a work item — powers-of-two 1/2/4/8 for issues, epics = exact sum of children (no rounding) |
+| `timeline-planning` | Project timeline / sprint plan / Gantt chart — converts estimates + dependencies into a Mermaid gantt |
+
+**Skill provenance / refresh caveat.** Project skill copies are snapshots. `issue-decomposition`,
+`estimating-work-items`, and `timeline-planning` ship *enabled* in this project's copies while their
+global sources (`C:\Users\lukas\.agents\skills\`) carry `disabled: true`. A future refresh that
+re-copies from the global store would silently re-disable them — re-apply this project's enable
+decision after any refresh rather than letting the re-copy reset it.
+
+Before starting any non-trivial task, check the enabled-skill list
+(surfaced through the `skills` tool — `11-tools.md`) and match skills to
+the actual task by their names and descriptions before assuming the base
+rules alone apply. When a skill's trigger applies, activate and follow it
+through Cline's skill mechanism; combine skills whose responsibilities
+complement each other (e.g. an implementation skill plus `code-reviewer`),
+and follow each activated skill while respecting the user's explicit
+requirements, project rules, and security constraints — skills never
+override project rules (see "Rule Priority" above). Never claim to have
+used a skill unless it was actually activated and its instructions were
+available. Keep loading to the skill's own SKILL.md (see the loading rule
+below); do not invoke irrelevant skills.
 
 Do not invoke skills for trivial tasks (typo fixes, import corrections,
 documentation tweaks, isolated simple fixes) — the base rules cover those
@@ -59,6 +88,42 @@ skill's Reviewer Loading Protocol), never the whole set.
 For Security Sensitive changes, invoke `security-first` before
 implementation so trust boundaries and attack surface are framed before
 code is written, not as a post-hoc check.
+
+## Skill Discovery
+
+When a task would benefit materially from a capability no enabled skill
+covers:
+
+- Search for an existing skill before deciding to create one. Check the
+  enabled-skill list first, then trusted sources — the official skill
+  registry (https://skills.sh/) and relevant GitHub repositories — using
+  web search when available (`ddg-search` + web fetch, `11-tools.md`).
+- Search by the task's domain and the intended capability, not only by a
+  technology name (e.g. "rule-table review" rather than just "pandas").
+- If a dedicated discovery skill (e.g. `find-skills`) appears in the
+  enabled-skill list, prefer it for this step.
+- Evaluate candidates for relevance, maintenance, Cline compatibility,
+  dependencies, required permissions, bundled scripts, and security risk.
+  Read the candidate's SKILL.md and any scripts before recommending it.
+- Present the best candidate(s), explain why they fit, and provide
+  installation instructions. Ask for explicit approval before installing a
+  skill, enabling it, executing its scripts, or modifying global agent
+  configuration.
+- If search tools are unavailable, explain the limitation and suggest a
+  practical alternative; do not pretend a search was performed.
+
+Searching for a skill does not authorize installing it, and installing a
+skill does not authorize running arbitrary scripts or commands bundled
+with it. Do not disable, replace, or remove existing skills without
+approval. Prefer the smallest useful change — do not install a whole skill
+collection when a single skill suffices.
+
+Keep selection efficient: for trivial tasks proceed directly unless a
+clearly relevant skill is already enabled; for complex, unfamiliar, or
+specialized tasks make a deliberate skill-selection decision. Do not
+search externally when an enabled skill already covers the task, and do
+not search repeatedly within the same task unless the current selection
+proves inadequate.
 
 ## Invocation Defaults
 

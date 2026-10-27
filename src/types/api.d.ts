@@ -1684,12 +1684,19 @@ export interface components {
             founder_name: string;
             /** Patron Name */
             patron_name?: string | null;
+            /** Star System */
+            star_system?: string | null;
             colony_type: components["schemas"]["ColonyType"];
             /**
              * Base Size
              * @description Initial settlement size; defaults to the colony type's base size.
              */
             base_size?: number | null;
+            /**
+             * Notes
+             * @description Colony Dossier Notes & Strategic Intent entered at creation.
+             */
+            notes?: string | null;
         };
         /**
          * ColonyListItem
@@ -1704,6 +1711,8 @@ export interface components {
             founder_name: string;
             /** Patron Name */
             patron_name: string | null;
+            /** Star System */
+            star_system?: string | null;
             colony_type: components["schemas"]["ColonyType"];
             /** Age Days */
             age_days: number;
@@ -1719,6 +1728,8 @@ export interface components {
             current_piety: number;
             /** Profit Factor */
             profit_factor: number;
+            /** Notes */
+            notes?: string | null;
         };
         /**
          * ColonyOwnershipTransfer
@@ -1750,6 +1761,8 @@ export interface components {
             founder_name: string;
             /** Patron Name */
             patron_name: string | null;
+            /** Star System */
+            star_system?: string | null;
             colony_type: components["schemas"]["ColonyType"];
             /** Age Days */
             age_days: number;
@@ -1760,6 +1773,8 @@ export interface components {
             age_last_updated: string;
             /** Current Event */
             current_event: string | null;
+            /** Notes */
+            notes?: string | null;
             /** Base Complacency */
             base_complacency: number;
             /** Base Order */
@@ -1899,10 +1914,17 @@ export interface components {
             founder_name?: string | null;
             /** Patron Name */
             patron_name?: string | null;
+            /** Star System */
+            star_system?: string | null;
             /** Age Days */
             age_days?: number | null;
             /** Current Event */
             current_event?: string | null;
+            /**
+             * Notes
+             * @description Colony Dossier Notes & Strategic Intent.
+             */
+            notes?: string | null;
         };
         /**
          * ColonyUserCreate

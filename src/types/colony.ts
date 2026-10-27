@@ -232,6 +232,7 @@ export interface Colony {
   founder_id?: string;
   founder_name?: string;
   founding_days?: number;
+  age_days?: number;
   quote?: string;
   created_at: string;
   updated_at: string;

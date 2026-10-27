@@ -23,6 +23,8 @@ interface ColonyDetailsViewProps {
   modifiers: Modifier[];
   resources: ColonyResource[];
   onAdvanceDays?: (days: number) => void;
+  /** Directly sets the colony's age (days since founding), not an additive advance. */
+  onSetAge?: (ageDays: number) => void;
   onNavigateTab?: (tab: "representative" | "plans") => void;
   onOpenReassignRep?: () => void;
   onOpenAddModifier: () => void;
@@ -43,6 +45,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
   modifiers,
   resources,
   onAdvanceDays,
+  onSetAge,
   onNavigateTab,
   onOpenReassignRep,
   onOpenAddModifier,
@@ -55,6 +58,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
   onDeleteColony,
 }) => {
   const [customDays, setCustomDays] = useState("30");
+  const [setAgeValue, setSetAgeValue] = useState(String(colony.founding_days || 0));
   const age = formatFoundingAge(colony.founding_days || 0);
 
   const handleCustomAdvance = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -62,6 +66,14 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
     const days = Number.parseInt(customDays, 10);
     if (!Number.isNaN(days) && days > 0) {
       onAdvanceDays(days);
+    }
+  };
+
+  const handleCustomSet = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const days = Number.parseInt(setAgeValue, 10);
+    if (!Number.isNaN(days) && days >= 0 && onSetAge) {
+      onSetAge(days);
     }
   };
 
@@ -117,7 +129,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
               COLONY ADMINISTRATIVE RECORD
             </h2>
             <p className="text-xs text-[#94a3b8] font-mono-slate mt-0.5">
-              Colony Charter Details
+              Colony Details
             </p>
           </div>
 
@@ -190,21 +202,25 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
           </div>
         </div>
 
-        {/* Dossier Quote/Description */}
+        {/* Dossier Notes */}
         <div className="p-3 bg-[#0d121f] border border-[#1e293b] rounded text-xs font-mono-slate">
           <span className="text-[10px] text-[#64748b] tracking-wider uppercase block font-semibold mb-1">
             RECORDED COLONY DOSSIER DESCRIPTION
           </span>
-          <p className="text-[#cbd5e1] italic">
-            "{colony.notes || colony.quote || "The primary administrative seat and industrial core world of the Von Valancius Dynasty."}"
-          </p>
+          {colony.notes ? (
+            <p className="text-[#cbd5e1] italic">{colony.notes}</p>
+          ) : (
+            <p className="text-[#475569] italic">
+              No dossier notes recorded. Use Edit Charter to record the colony's strategic intent.
+            </p>
+          )}
         </div>
 
-        {/* Founding Age */}
+        {/* Colony Age */}
         <div className="p-3.5 bg-[#0f1523] border border-[#23314d] rounded flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono-slate text-xs">
           <div>
             <span className="text-[10px] text-[#f59e0b] tracking-wider uppercase block font-bold">
-              FOUNDING AGE
+              COLONY AGE
             </span>
             <div className="flex items-center space-x-2 mt-0.5">
               <span className="text-sm font-bold text-[#f8fafc]">
@@ -265,6 +281,26 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
                 + ADD
               </button>
             </form>
+
+            <span className="text-[#64748b]">|</span>
+            <form onSubmit={handleCustomSet} className="flex items-center space-x-1">
+              <input
+                id="set-age-input"
+                type="number"
+                min="0"
+                max="3650000"
+                value={setAgeValue}
+                onChange={(e) => setSetAgeValue(e.target.value)}
+                className="w-14 bg-[#070a12] border border-[#252f44] text-[#f8fafc] px-2 py-1 rounded text-center focus:outline-none focus:border-[#38bdf8]"
+              />
+              <button
+                id="details-set-age-submit"
+                type="submit"
+                className="px-2 py-1 bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 text-[#38bdf8] border border-[#38bdf8]/50 rounded font-bold uppercase"
+              >
+                SET
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -280,7 +316,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
               COLONY REPRESENTATIVE DOSSIER
             </h2>
             <p className="text-xs text-[#94a3b8] font-mono-slate mt-0.5">
-              Assigned Viceroy / Overseer Governing Current Domain
+              Assigned Overseer
             </p>
           </div>
 
@@ -509,7 +545,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
               CUSTOM GM MODIFIERS MANAGEMENT
             </h2>
             <p className="text-xs text-[#94a3b8] font-mono-slate mt-0.5">
-              Physical tabletop event outcomes and custom situational bonuses/penalties
+              Event outcomes and custom situational bonuses/penalties
             </p>
           </div>
 
@@ -519,7 +555,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
             className="flex items-center space-x-1 px-3 py-1.5 bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 border border-[#f59e0b]/60 text-xs font-mono-slate text-[#fef08a] rounded transition"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Add Custom Modifier</span>
+            <span>Add Custom Modifier</span>
           </button>
         </div>
 
@@ -587,7 +623,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
               ) : (
                 <tr>
                   <td colSpan={6} className="py-4 text-center text-xs text-[#64748b] italic">
-                    No custom modifiers recorded. Use the button above to log GM rulings.
+                    No custom modifiers recorded. Use the button to add GM modifiers.
                   </td>
                 </tr>
               )}
@@ -607,7 +643,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
               PLANETARY RESOURCES SURVEY
             </h2>
             <p className="text-xs text-[#94a3b8] font-mono-slate mt-0.5">
-              Natural resources, minerals, and archeotech exploited by the colony
+              Natural resources, minerals, and archeotech available to the colony
             </p>
           </div>
 
@@ -617,7 +653,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
             className="flex items-center space-x-1 px-3 py-1.5 bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 border border-[#f59e0b]/60 text-xs font-mono-slate text-[#fef08a] rounded transition"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Log Deposit</span>
+            <span>Log Deposit</span>
           </button>
         </div>
 
@@ -668,7 +704,7 @@ export const ColonyDetailsView: React.FC<ColonyDetailsViewProps> = ({
             LOOKING TO CONFIGURE HARD INFRASTRUCTURE, SUPPORT UPGRADES, OR DEVELOPMENT PLANS?
           </span>
           <span className="text-[11px] text-[#94a3b8]">
-            Manage power networks, void transport, arbites precincts, and long-term construction schedules.
+            Manage colony infrastructure upgrades and long-term construction plans.
           </span>
         </div>
 

@@ -341,3 +341,6 @@ export_*.py
 # Note: .DS_Store, ._* already ignored above
 .Spotlight-V100
 .Trashes
+.run-pids.txt
+alembic/versions/20261027_000001_add_notes_to_colonies.py
+alembic/versions/20261027_000002_add_star_system_to_colonies.py

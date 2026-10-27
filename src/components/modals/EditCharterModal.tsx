@@ -18,7 +18,7 @@ export const EditCharterModal: React.FC<EditCharterModalProps> = ({
   const [name, setName] = useState(colony.name);
   const [starSystem, setStarSystem] = useState(colony.star_system ?? "");
   const [founderName, setFounderName] = useState(colony.founder_name ?? "");
-  const [quote, setQuote] = useState(colony.quote || colony.notes || "");
+  const [notes, setNotes] = useState(colony.notes ?? "");
 
   if (!isOpen) return null;
 
@@ -28,8 +28,7 @@ export const EditCharterModal: React.FC<EditCharterModalProps> = ({
       name: name.trim() || colony.name,
       star_system: starSystem.trim(),
       founder_name: founderName.trim(),
-      quote: quote.trim(),
-      notes: quote.trim(),
+      notes: notes.trim(),
     });
     onClose();
   };
@@ -115,16 +114,16 @@ export const EditCharterModal: React.FC<EditCharterModalProps> = ({
 
           <div>
             <label
-              htmlFor="edit-charter-quote"
+              htmlFor="edit-charter-notes"
               className="block text-[#cbd5e1] uppercase tracking-wider mb-1 font-semibold"
             >
-              Dossier Quote & Strategic Summary
+              Colony Dossier Notes & Strategic Intent
             </label>
             <textarea
-              id="edit-charter-quote"
+              id="edit-charter-notes"
               rows={3}
-              value={quote}
-              onChange={(e) => setQuote(e.target.value)}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-[#070a12] border border-[#252f44] focus:border-[#f59e0b] text-[#f8fafc] px-3 py-2 rounded focus:outline-none"
             />
           </div>

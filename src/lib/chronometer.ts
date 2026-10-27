@@ -1,4 +1,4 @@
-// Chronometer module for formatting a colony's founding age.
+// Chronometer module for formatting a colony's age.
 //
 // The engine tracks colony age purely as elapsed "standard solar days"
 // (colony.founding_days). No in-game calendar date / turn (year & quarter)
@@ -6,7 +6,7 @@
 // human-readable years / months / days summary for display.
 
 /**
- * Format a colony's founding age (in standard solar days) as readable text.
+ * Format a colony's age (in standard solar days) as readable text.
  *
  * @param foundingDays - Number of days since the colony was founded.
  * @returns The formatted string plus decomposed years / months / days parts.

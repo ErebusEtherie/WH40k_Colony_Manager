@@ -122,18 +122,14 @@ export const ColonyOverview: React.FC<ColonyOverviewProps> = ({
         {/* Dossier Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#222e46] pb-4 mb-4 gap-3">
           <div>
-            <div className="flex items-center space-x-2 text-[#f59e0b] mb-1">
-              <span className="text-xs font-mono-slate tracking-widest uppercase">
-                IMPERIAL VALANCIUS EXPANSE LOGISTICS
-              </span>
-              <span className="text-xs text-[#64748b]">•</span>
-              <span className="text-xs font-mono-slate text-[#38bdf8] uppercase">
-                {colony.star_system ? `${colony.star_system} System` : "Uncharted System"}
-              </span>
-            </div>
             <h1 className="font-gothic font-bold text-2xl sm:text-3xl text-[#fef08a] tracking-wide uppercase">
               {colony.name}
             </h1>
+            <div className="flex items-center space-x-2 text-[#f59e0b] mt-1.5">
+              <span className="text-xs font-mono-slate uppercase">
+                {colony.star_system ? colony.star_system : "Uncharted System"}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center space-x-3">

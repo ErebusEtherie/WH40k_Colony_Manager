@@ -51,6 +51,7 @@ class SqlAlchemyColonyRepository(ColonyRepository):
             orm.age_days = colony.age_days
             orm.age_last_updated = colony.age_last_updated
             orm.current_event = colony.current_event
+            orm.notes = colony.notes
             orm.base_complacency = colony.base_complacency
             orm.base_order = colony.base_order
             orm.base_productivity = colony.base_productivity

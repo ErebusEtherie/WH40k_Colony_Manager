@@ -4914,6 +4914,18 @@
             ],
             "title": "Patron Name"
           },
+          "star_system": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Star System"
+          },
           "colony_type": {
             "$ref": "#/components/schemas/ColonyType"
           },
@@ -4930,6 +4942,19 @@
             ],
             "title": "Base Size",
             "description": "Initial settlement size; defaults to the colony type's base size."
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Colony Dossier Notes & Strategic Intent entered at creation."
           }
         },
         "type": "object",
@@ -4973,6 +4998,17 @@
             ],
             "title": "Patron Name"
           },
+          "star_system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Star System"
+          },
           "colony_type": {
             "$ref": "#/components/schemas/ColonyType"
           },
@@ -5003,6 +5039,17 @@
           "profit_factor": {
             "type": "integer",
             "title": "Profit Factor"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
           }
         },
         "type": "object",
@@ -5077,6 +5124,17 @@
             ],
             "title": "Patron Name"
           },
+          "star_system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Star System"
+          },
           "colony_type": {
             "$ref": "#/components/schemas/ColonyType"
           },
@@ -5099,6 +5157,17 @@
               }
             ],
             "title": "Current Event"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
           },
           "base_complacency": {
             "type": "integer",
@@ -5509,6 +5578,18 @@
             ],
             "title": "Patron Name"
           },
+          "star_system": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Star System"
+          },
           "age_days": {
             "anyOf": [
               {
@@ -5531,6 +5612,19 @@
               }
             ],
             "title": "Current Event"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Colony Dossier Notes & Strategic Intent."
           }
         },
         "type": "object",

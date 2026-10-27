@@ -101,6 +101,53 @@ def test_update_colony(auth_client):
     assert response.json()["name"] == "Updated Colony"
 
 
+def test_colony_dossier_notes_roundtrip(auth_client):
+    """GM-authored dossier notes persist through create -> get -> update -> list."""
+    notes = "Primary administrative seat and industrial core world."
+    create_data = {
+        "name": "Dossier Notes Test",
+        "founder_name": "Owner",
+        "colony_type": "mining_and_industry",
+        "notes": notes,
+    }
+    response = auth_client.post("/api/v1/colonies", json=create_data)
+    assert response.status_code == 201
+    colony = response.json()
+    assert colony["notes"] == notes
+
+    # GET returns the persisted notes.
+    response = auth_client.get(f"/api/v1/colonies/{colony['id']}")
+    assert response.status_code == 200
+    assert response.json()["notes"] == notes
+
+    # PUT can overwrite and clear the notes.
+    response = auth_client.put(f"/api/v1/colonies/{colony['id']}", json={"notes": "New edict."})
+    assert response.status_code == 200
+    assert response.json()["notes"] == "New edict."
+
+    response = auth_client.put(f"/api/v1/colonies/{colony['id']}", json={"notes": ""})
+    assert response.status_code == 200
+    assert response.json()["notes"] == ""
+
+    # The list endpoint returns notes so the FE can render the dossier description.
+    response = auth_client.get("/api/v1/colonies")
+    assert response.status_code == 200
+    item = next(c for c in response.json()["items"] if c["id"] == colony["id"])
+    assert item["notes"] == ""
+
+
+def test_create_colony_without_notes_defaults_none(auth_client):
+    """Omitting notes at creation leaves the dossier description empty, not fabricated."""
+    create_data = {
+        "name": "No Notes Colony",
+        "founder_name": "Owner",
+        "colony_type": "mining_and_industry",
+    }
+    response = auth_client.post("/api/v1/colonies", json=create_data)
+    assert response.status_code == 201
+    assert response.json()["notes"] is None
+
+
 def test_delete_colony(auth_client):
     """Test deleting a colony."""
     create_data = {

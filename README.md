@@ -238,6 +238,31 @@ creation). Which you need depends on what you want to test:
        print(f"Created user 'LordCaptain' (colony_manager) in {db_path}")
    ```
 
+3. **All three demo users at once (recommended for local testing)** — the
+   `scripts/create_demo_users.py` helper creates one user per role in a single
+   run: a `viewer`, an elevated `rogue_trader` (`colony_manager`), and an
+   `admin`. With the **backend stopped** (SQLite lock on Windows), run from
+   the project root:
+
+   ```bash
+   uv run python scripts/create_demo_users.py
+   ```
+
+   | Username | System role | Can do |
+   | --- | --- | --- |
+   | `viewer` | `viewer` | log in and view |
+   | `rogue_trader` | `colony_manager` | charter and manage colonies, record events/modifiers |
+   | `admin` | `admin` | everything, including user management |
+
+   All three share the password `TestP@ss123` (satisfies the configured
+   complexity rules). The script is **idempotent** — re-running it won't
+   duplicate users — and writes to the same database the backend uses
+   (`./colony_manager.sqlite`, or `$DATABASE_PATH` if set). Restart the
+   backend afterwards and log in at <http://localhost:3000>.
+
+   > If you only need a single `viewer` account, `POST /api/v1/auth/register`
+   > (step 1) is enough — the script exists to shortcut the elevated roles.
+
 ### First Steps
 
 1. **Register a user**: `POST /api/v1/auth/register`
